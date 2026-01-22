@@ -92,17 +92,35 @@ async def check_platform(client: httpx.AsyncClient, name: str, url: str) -> dict
 
 
 async def check_phone(phone: str, country_code: str = "AR") -> PhoneResult:
-    """Check phone number using Truecaller for real data"""
-    from app.services.truecaller_service import truecaller_service
+    """
+    Check phone number using Truecaller.
+    Tries Telegram bot first (free), then direct API as fallback.
+    """
+    from app.core.config import settings
 
     # Clean phone number
     clean_phone = re.sub(r'[^\d+]', '', phone)
 
-    # Use Truecaller for lookup
-    tc_result = await truecaller_service.lookup(clean_phone, country_code)
+    tc_result = None
 
-    if tc_result.found:
-        # Calculate risk based on spam score and tags
+    # Try Telegram bot first (FREE)
+    if settings.TELEGRAM_API_ID is not None and settings.TELEGRAM_API_HASH and settings.TELEGRAM_SESSION:
+        try:
+            from app.services.telegram_truecaller_service import telegram_truecaller_service
+            tc_result = await telegram_truecaller_service.lookup(clean_phone, country_code)
+        except Exception as e:
+            print(f"Telegram Truecaller error: {e}")
+
+    # Fallback to direct Truecaller API
+    if (tc_result is None or not tc_result.found) and settings.TRUECALLER_TOKEN:
+        try:
+            from app.services.truecaller_service import truecaller_service
+            tc_result = await truecaller_service.lookup(clean_phone, country_code)
+        except Exception as e:
+            print(f"Direct Truecaller error: {e}")
+
+    # Process result
+    if tc_result and tc_result.found:
         spam_score = tc_result.spam_score
         if spam_score >= 7 or "scam" in tc_result.tags:
             risk_level = RiskLevel.CRITICAL
@@ -120,16 +138,16 @@ async def check_phone(phone: str, country_code: str = "AR") -> PhoneResult:
             carrier=tc_result.carrier or "Unknown",
             line_type=tc_result.phone_type or "mobile",
             location=tc_result.location or country_code,
-            breaches_found=0,  # Truecaller doesn't provide this
+            breaches_found=0,
             spam_reports=spam_score,
             risk_level=risk_level,
-            # Extra data from Truecaller
             owner_name=tc_result.name,
             tags=tc_result.tags,
             email=tc_result.email
         )
     else:
-        # Truecaller didn't find data or not configured
+        # No data found
+        error_msg = tc_result.error if tc_result else "Truecaller not configured"
         return PhoneResult(
             phone=clean_phone,
             carrier="Unknown",
@@ -138,7 +156,7 @@ async def check_phone(phone: str, country_code: str = "AR") -> PhoneResult:
             breaches_found=0,
             spam_reports=0,
             risk_level=RiskLevel.LOW,
-            error=tc_result.error
+            error=error_msg
         )
 
 

@@ -1,6 +1,7 @@
 """
 FK94 Security Platform - Configuration
 """
+from typing import Optional
 from pydantic_settings import BaseSettings
 from functools import lru_cache
 
@@ -28,8 +29,13 @@ class Settings(BaseSettings):
     WHOISXML_API_KEY: str = ""
     INTELLIGENCE_X_API_KEY: str = ""
 
-    # Truecaller
-    TRUECALLER_TOKEN: str = ""  # Get from Truecaller app installation
+    # Truecaller (método directo - opcional)
+    TRUECALLER_TOKEN: str = ""
+
+    # Telegram (para Truecaller via bot - GRATIS)
+    TELEGRAM_API_ID: Optional[int] = None
+    TELEGRAM_API_HASH: str = ""
+    TELEGRAM_SESSION: str = ""  # Se genera una vez con el script de setup
 
     # Rate limiting
     FREE_CHECKS_PER_DAY: int = 50
