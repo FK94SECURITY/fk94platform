@@ -37,7 +37,7 @@ class UsernameCheckRequest(BaseModel):
 
 class PhoneCheckRequest(BaseModel):
     phone: str
-    country_code: str = "US"
+    country_code: str = "AR"  # Default Argentina
 
 
 class DomainCheckRequest(BaseModel):
@@ -124,6 +124,11 @@ class PhoneResult(BaseModel):
     breaches_found: int = 0
     spam_reports: int = 0
     risk_level: RiskLevel
+    # Truecaller data
+    owner_name: Optional[str] = None
+    tags: List[str] = []
+    email: Optional[str] = None
+    error: Optional[str] = None
 
 
 class DomainResult(BaseModel):

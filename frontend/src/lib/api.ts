@@ -47,6 +47,11 @@ export interface PhoneResult {
   breaches_found: number;
   spam_reports: number;
   risk_level: string;
+  // Truecaller data
+  owner_name?: string;
+  tags: string[];
+  email?: string;
+  error?: string;
 }
 
 export interface DomainResult {
@@ -159,7 +164,7 @@ export async function checkUsername(username: string): Promise<UsernameResult> {
   return response.json();
 }
 
-export async function checkPhone(phone: string, countryCode: string = 'US'): Promise<PhoneResult> {
+export async function checkPhone(phone: string, countryCode: string = 'AR'): Promise<PhoneResult> {
   const response = await fetch(`${API_BASE}/check/phone`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },

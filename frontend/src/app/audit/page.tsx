@@ -582,6 +582,71 @@ function renderTypeSpecificResults(result: AuditResult, language: 'en' | 'es') {
     );
   }
 
+  // Phone results (Truecaller)
+  if (result.phone_result) {
+    const pr = result.phone_result;
+    return (
+      <div className="bg-zinc-900/50 rounded-2xl border border-zinc-800 p-8">
+        <h2 className="text-xl font-bold mb-6">
+          {language === 'es' ? 'Información del Teléfono' : 'Phone Information'}
+        </h2>
+        <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
+          {pr.owner_name && (
+            <div className="bg-zinc-800 p-4 rounded-lg col-span-full sm:col-span-1">
+              <p className="text-sm text-zinc-400">{language === 'es' ? 'Titular' : 'Owner'}</p>
+              <p className="font-semibold text-lg">{pr.owner_name}</p>
+            </div>
+          )}
+          <div className="bg-zinc-800 p-4 rounded-lg">
+            <p className="text-sm text-zinc-400">{language === 'es' ? 'Operador' : 'Carrier'}</p>
+            <p className="font-semibold">{pr.carrier || 'Unknown'}</p>
+          </div>
+          <div className="bg-zinc-800 p-4 rounded-lg">
+            <p className="text-sm text-zinc-400">{language === 'es' ? 'Tipo' : 'Type'}</p>
+            <p className="font-semibold">{pr.line_type || 'Mobile'}</p>
+          </div>
+          <div className="bg-zinc-800 p-4 rounded-lg">
+            <p className="text-sm text-zinc-400">{language === 'es' ? 'Ubicación' : 'Location'}</p>
+            <p className="font-semibold">{pr.location || 'Unknown'}</p>
+          </div>
+          <div className={`p-4 rounded-lg ${pr.spam_reports > 3 ? 'bg-red-500/10 border border-red-500/20' : pr.spam_reports > 0 ? 'bg-yellow-500/10 border border-yellow-500/20' : 'bg-emerald-500/10 border border-emerald-500/20'}`}>
+            <p className="text-sm text-zinc-400">{language === 'es' ? 'Score de Spam' : 'Spam Score'}</p>
+            <p className={`font-semibold ${pr.spam_reports > 3 ? 'text-red-400' : pr.spam_reports > 0 ? 'text-yellow-400' : 'text-emerald-400'}`}>
+              {pr.spam_reports}/10
+            </p>
+          </div>
+          {pr.email && (
+            <div className="bg-zinc-800 p-4 rounded-lg">
+              <p className="text-sm text-zinc-400">Email</p>
+              <p className="font-semibold text-sm truncate">{pr.email}</p>
+            </div>
+          )}
+        </div>
+        {pr.tags && pr.tags.length > 0 && (
+          <div className="mt-4">
+            <p className="text-sm text-zinc-400 mb-2">{language === 'es' ? 'Etiquetas' : 'Tags'}</p>
+            <div className="flex flex-wrap gap-2">
+              {pr.tags.map((tag, i) => (
+                <span key={i} className={`px-3 py-1 rounded-full text-sm ${
+                  tag === 'spam' || tag === 'scam' ? 'bg-red-500/20 text-red-400' :
+                  tag === 'business' ? 'bg-blue-500/20 text-blue-400' :
+                  'bg-zinc-700 text-zinc-300'
+                }`}>
+                  {tag}
+                </span>
+              ))}
+            </div>
+          </div>
+        )}
+        {pr.error && (
+          <div className="mt-4 p-3 bg-yellow-500/10 border border-yellow-500/20 rounded-lg">
+            <p className="text-yellow-400 text-sm">{pr.error}</p>
+          </div>
+        )}
+      </div>
+    );
+  }
+
   // IP results
   if (result.ip_result) {
     const ir = result.ip_result;

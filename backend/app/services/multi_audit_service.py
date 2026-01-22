@@ -91,27 +91,55 @@ async def check_platform(client: httpx.AsyncClient, name: str, url: str) -> dict
     return {"found": False, "name": name, "url": url}
 
 
-async def check_phone(phone: str, country_code: str = "US") -> PhoneResult:
-    """Check phone number for information and breaches"""
+async def check_phone(phone: str, country_code: str = "AR") -> PhoneResult:
+    """Check phone number using Truecaller for real data"""
+    from app.services.truecaller_service import truecaller_service
+
     # Clean phone number
     clean_phone = re.sub(r'[^\d+]', '', phone)
 
-    # For now, return simulated data
-    # In production, integrate with:
-    # - NumVerify API for carrier/type
-    # - Twilio Lookup API
-    # - SpyDialer
-    # - HIBP (some breaches include phone)
+    # Use Truecaller for lookup
+    tc_result = await truecaller_service.lookup(clean_phone, country_code)
 
-    return PhoneResult(
-        phone=clean_phone,
-        carrier="Unknown",
-        line_type="Unknown",
-        location=country_code,
-        breaches_found=0,
-        spam_reports=0,
-        risk_level=RiskLevel.LOW
-    )
+    if tc_result.found:
+        # Calculate risk based on spam score and tags
+        spam_score = tc_result.spam_score
+        if spam_score >= 7 or "scam" in tc_result.tags:
+            risk_level = RiskLevel.CRITICAL
+        elif spam_score >= 5 or "spam" in tc_result.tags:
+            risk_level = RiskLevel.HIGH
+        elif spam_score >= 3:
+            risk_level = RiskLevel.MEDIUM
+        elif spam_score >= 1 or tc_result.tags:
+            risk_level = RiskLevel.LOW
+        else:
+            risk_level = RiskLevel.SAFE
+
+        return PhoneResult(
+            phone=clean_phone,
+            carrier=tc_result.carrier or "Unknown",
+            line_type=tc_result.phone_type or "mobile",
+            location=tc_result.location or country_code,
+            breaches_found=0,  # Truecaller doesn't provide this
+            spam_reports=spam_score,
+            risk_level=risk_level,
+            # Extra data from Truecaller
+            owner_name=tc_result.name,
+            tags=tc_result.tags,
+            email=tc_result.email
+        )
+    else:
+        # Truecaller didn't find data or not configured
+        return PhoneResult(
+            phone=clean_phone,
+            carrier="Unknown",
+            line_type="Unknown",
+            location=country_code,
+            breaches_found=0,
+            spam_reports=0,
+            risk_level=RiskLevel.LOW,
+            error=tc_result.error
+        )
 
 
 async def check_domain(domain: str) -> DomainResult:

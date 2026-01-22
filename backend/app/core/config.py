@@ -28,6 +28,9 @@ class Settings(BaseSettings):
     WHOISXML_API_KEY: str = ""
     INTELLIGENCE_X_API_KEY: str = ""
 
+    # Truecaller
+    TRUECALLER_TOKEN: str = ""  # Get from Truecaller app installation
+
     # Rate limiting
     FREE_CHECKS_PER_DAY: int = 50
 
