@@ -1,0 +1,390 @@
+<!--
+=================================================================
+FK94 SECURITY - SUPABASE EMAIL TEMPLATES
+=================================================================
+Instructions:
+1. Go to Supabase Dashboard > Authentication > Email Templates
+2. Copy and paste each template into the corresponding field
+3. Update the site URL to your production URL when deploying
+=================================================================
+-->
+
+<!-- ============================================= -->
+<!-- CONFIRM SIGNUP EMAIL -->
+<!-- ============================================= -->
+<!--
+Subject: Confirm your FK94 Security account
+-->
+
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+<body style="margin: 0; padding: 0; background-color: #09090b; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;">
+  <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="background-color: #09090b;">
+    <tr>
+      <td align="center" style="padding: 40px 20px;">
+        <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="max-width: 500px;">
+          <!-- Header -->
+          <tr>
+            <td align="center" style="padding-bottom: 30px;">
+              <h1 style="margin: 0; font-size: 28px; font-weight: bold; color: white;">
+                FK94<span style="color: #10b981;">Security</span>
+              </h1>
+              <p style="margin: 8px 0 0 0; color: #10b981; font-size: 12px; letter-spacing: 2px;">
+                SECURITY MADE SIMPLE
+              </p>
+            </td>
+          </tr>
+
+          <!-- Content Box -->
+          <tr>
+            <td style="background-color: #18181b; border: 1px solid #27272a; border-radius: 16px; padding: 32px;">
+              <h2 style="margin: 0 0 16px 0; font-size: 20px; font-weight: 600; color: white;">
+                Confirm your email
+              </h2>
+              <p style="margin: 0 0 24px 0; color: #a1a1aa; font-size: 14px; line-height: 1.6;">
+                Thanks for signing up for FK94 Security. Click the button below to confirm your email address and start protecting your digital identity.
+              </p>
+              <table role="presentation" width="100%" cellspacing="0" cellpadding="0">
+                <tr>
+                  <td align="center">
+                    <a href="{{ .ConfirmationURL }}" style="display: inline-block; background-color: #059669; color: white; font-weight: 500; text-decoration: none; padding: 14px 32px; border-radius: 8px; font-size: 14px;">
+                      Confirm Email
+                    </a>
+                  </td>
+                </tr>
+              </table>
+              <p style="margin: 24px 0 0 0; color: #71717a; font-size: 12px; line-height: 1.5;">
+                If the button doesn't work, copy and paste this link into your browser:<br>
+                <a href="{{ .ConfirmationURL }}" style="color: #10b981; word-break: break-all;">{{ .ConfirmationURL }}</a>
+              </p>
+            </td>
+          </tr>
+
+          <!-- Footer -->
+          <tr>
+            <td align="center" style="padding-top: 30px;">
+              <p style="margin: 0; color: #52525b; font-size: 12px;">
+                FK94 Security - OPSEC & Privacy tools for everyone.
+              </p>
+              <p style="margin: 8px 0 0 0; color: #3f3f46; font-size: 11px;">
+                You received this email because you signed up for FK94 Security.
+              </p>
+            </td>
+          </tr>
+        </table>
+      </td>
+    </tr>
+  </table>
+</body>
+</html>
+
+
+<!-- ============================================= -->
+<!-- MAGIC LINK EMAIL -->
+<!-- ============================================= -->
+<!--
+Subject: Your FK94 Security login link
+-->
+
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+<body style="margin: 0; padding: 0; background-color: #09090b; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;">
+  <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="background-color: #09090b;">
+    <tr>
+      <td align="center" style="padding: 40px 20px;">
+        <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="max-width: 500px;">
+          <!-- Header -->
+          <tr>
+            <td align="center" style="padding-bottom: 30px;">
+              <h1 style="margin: 0; font-size: 28px; font-weight: bold; color: white;">
+                FK94<span style="color: #10b981;">Security</span>
+              </h1>
+              <p style="margin: 8px 0 0 0; color: #10b981; font-size: 12px; letter-spacing: 2px;">
+                SECURITY MADE SIMPLE
+              </p>
+            </td>
+          </tr>
+
+          <!-- Content Box -->
+          <tr>
+            <td style="background-color: #18181b; border: 1px solid #27272a; border-radius: 16px; padding: 32px;">
+              <h2 style="margin: 0 0 16px 0; font-size: 20px; font-weight: 600; color: white;">
+                Login to FK94 Security
+              </h2>
+              <p style="margin: 0 0 24px 0; color: #a1a1aa; font-size: 14px; line-height: 1.6;">
+                Click the button below to securely log in to your account. This link will expire in 1 hour.
+              </p>
+              <table role="presentation" width="100%" cellspacing="0" cellpadding="0">
+                <tr>
+                  <td align="center">
+                    <a href="{{ .ConfirmationURL }}" style="display: inline-block; background-color: #059669; color: white; font-weight: 500; text-decoration: none; padding: 14px 32px; border-radius: 8px; font-size: 14px;">
+                      Log In
+                    </a>
+                  </td>
+                </tr>
+              </table>
+              <p style="margin: 24px 0 0 0; color: #71717a; font-size: 12px; line-height: 1.5;">
+                If you didn't request this link, you can safely ignore this email.
+              </p>
+            </td>
+          </tr>
+
+          <!-- Footer -->
+          <tr>
+            <td align="center" style="padding-top: 30px;">
+              <p style="margin: 0; color: #52525b; font-size: 12px;">
+                FK94 Security - OPSEC & Privacy tools for everyone.
+              </p>
+            </td>
+          </tr>
+        </table>
+      </td>
+    </tr>
+  </table>
+</body>
+</html>
+
+
+<!-- ============================================= -->
+<!-- RESET PASSWORD EMAIL -->
+<!-- ============================================= -->
+<!--
+Subject: Reset your FK94 Security password
+-->
+
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+<body style="margin: 0; padding: 0; background-color: #09090b; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;">
+  <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="background-color: #09090b;">
+    <tr>
+      <td align="center" style="padding: 40px 20px;">
+        <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="max-width: 500px;">
+          <!-- Header -->
+          <tr>
+            <td align="center" style="padding-bottom: 30px;">
+              <h1 style="margin: 0; font-size: 28px; font-weight: bold; color: white;">
+                FK94<span style="color: #10b981;">Security</span>
+              </h1>
+              <p style="margin: 8px 0 0 0; color: #10b981; font-size: 12px; letter-spacing: 2px;">
+                SECURITY MADE SIMPLE
+              </p>
+            </td>
+          </tr>
+
+          <!-- Content Box -->
+          <tr>
+            <td style="background-color: #18181b; border: 1px solid #27272a; border-radius: 16px; padding: 32px;">
+              <h2 style="margin: 0 0 16px 0; font-size: 20px; font-weight: 600; color: white;">
+                Reset your password
+              </h2>
+              <p style="margin: 0 0 24px 0; color: #a1a1aa; font-size: 14px; line-height: 1.6;">
+                We received a request to reset your password. Click the button below to create a new password. This link will expire in 1 hour.
+              </p>
+              <table role="presentation" width="100%" cellspacing="0" cellpadding="0">
+                <tr>
+                  <td align="center">
+                    <a href="{{ .ConfirmationURL }}" style="display: inline-block; background-color: #059669; color: white; font-weight: 500; text-decoration: none; padding: 14px 32px; border-radius: 8px; font-size: 14px;">
+                      Reset Password
+                    </a>
+                  </td>
+                </tr>
+              </table>
+              <p style="margin: 24px 0 0 0; color: #71717a; font-size: 12px; line-height: 1.5;">
+                If you didn't request this password reset, you can safely ignore this email. Your password will remain unchanged.
+              </p>
+            </td>
+          </tr>
+
+          <!-- Security Notice -->
+          <tr>
+            <td style="padding-top: 20px;">
+              <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="background-color: #451a03; border: 1px solid #78350f; border-radius: 8px; padding: 16px;">
+                <tr>
+                  <td style="color: #fbbf24; font-size: 12px; line-height: 1.5;">
+                    <strong>Security Tip:</strong> If you didn't request this reset, someone may have access to your email. Consider reviewing your email security settings.
+                  </td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+
+          <!-- Footer -->
+          <tr>
+            <td align="center" style="padding-top: 30px;">
+              <p style="margin: 0; color: #52525b; font-size: 12px;">
+                FK94 Security - OPSEC & Privacy tools for everyone.
+              </p>
+            </td>
+          </tr>
+        </table>
+      </td>
+    </tr>
+  </table>
+</body>
+</html>
+
+
+<!-- ============================================= -->
+<!-- CHANGE EMAIL ADDRESS EMAIL -->
+<!-- ============================================= -->
+<!--
+Subject: Confirm your new email address
+-->
+
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+<body style="margin: 0; padding: 0; background-color: #09090b; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;">
+  <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="background-color: #09090b;">
+    <tr>
+      <td align="center" style="padding: 40px 20px;">
+        <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="max-width: 500px;">
+          <!-- Header -->
+          <tr>
+            <td align="center" style="padding-bottom: 30px;">
+              <h1 style="margin: 0; font-size: 28px; font-weight: bold; color: white;">
+                FK94<span style="color: #10b981;">Security</span>
+              </h1>
+              <p style="margin: 8px 0 0 0; color: #10b981; font-size: 12px; letter-spacing: 2px;">
+                SECURITY MADE SIMPLE
+              </p>
+            </td>
+          </tr>
+
+          <!-- Content Box -->
+          <tr>
+            <td style="background-color: #18181b; border: 1px solid #27272a; border-radius: 16px; padding: 32px;">
+              <h2 style="margin: 0 0 16px 0; font-size: 20px; font-weight: 600; color: white;">
+                Confirm your new email
+              </h2>
+              <p style="margin: 0 0 24px 0; color: #a1a1aa; font-size: 14px; line-height: 1.6;">
+                Click the button below to confirm your new email address for your FK94 Security account.
+              </p>
+              <table role="presentation" width="100%" cellspacing="0" cellpadding="0">
+                <tr>
+                  <td align="center">
+                    <a href="{{ .ConfirmationURL }}" style="display: inline-block; background-color: #059669; color: white; font-weight: 500; text-decoration: none; padding: 14px 32px; border-radius: 8px; font-size: 14px;">
+                      Confirm New Email
+                    </a>
+                  </td>
+                </tr>
+              </table>
+              <p style="margin: 24px 0 0 0; color: #71717a; font-size: 12px; line-height: 1.5;">
+                If you didn't request this change, please contact support immediately.
+              </p>
+            </td>
+          </tr>
+
+          <!-- Footer -->
+          <tr>
+            <td align="center" style="padding-top: 30px;">
+              <p style="margin: 0; color: #52525b; font-size: 12px;">
+                FK94 Security - OPSEC & Privacy tools for everyone.
+              </p>
+            </td>
+          </tr>
+        </table>
+      </td>
+    </tr>
+  </table>
+</body>
+</html>
+
+
+<!-- ============================================= -->
+<!-- INVITE USER EMAIL -->
+<!-- ============================================= -->
+<!--
+Subject: You've been invited to FK94 Security
+-->
+
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+<body style="margin: 0; padding: 0; background-color: #09090b; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;">
+  <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="background-color: #09090b;">
+    <tr>
+      <td align="center" style="padding: 40px 20px;">
+        <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="max-width: 500px;">
+          <!-- Header -->
+          <tr>
+            <td align="center" style="padding-bottom: 30px;">
+              <h1 style="margin: 0; font-size: 28px; font-weight: bold; color: white;">
+                FK94<span style="color: #10b981;">Security</span>
+              </h1>
+              <p style="margin: 8px 0 0 0; color: #10b981; font-size: 12px; letter-spacing: 2px;">
+                SECURITY MADE SIMPLE
+              </p>
+            </td>
+          </tr>
+
+          <!-- Content Box -->
+          <tr>
+            <td style="background-color: #18181b; border: 1px solid #27272a; border-radius: 16px; padding: 32px;">
+              <h2 style="margin: 0 0 16px 0; font-size: 20px; font-weight: 600; color: white;">
+                You're invited!
+              </h2>
+              <p style="margin: 0 0 24px 0; color: #a1a1aa; font-size: 14px; line-height: 1.6;">
+                You've been invited to join FK94 Security. Click the button below to accept the invitation and create your account.
+              </p>
+              <table role="presentation" width="100%" cellspacing="0" cellpadding="0">
+                <tr>
+                  <td align="center">
+                    <a href="{{ .ConfirmationURL }}" style="display: inline-block; background-color: #059669; color: white; font-weight: 500; text-decoration: none; padding: 14px 32px; border-radius: 8px; font-size: 14px;">
+                      Accept Invitation
+                    </a>
+                  </td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+
+          <!-- Features -->
+          <tr>
+            <td style="padding-top: 20px;">
+              <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="background-color: #18181b; border: 1px solid #27272a; border-radius: 8px; padding: 20px;">
+                <tr>
+                  <td style="color: #a1a1aa; font-size: 13px; line-height: 1.6;">
+                    <p style="margin: 0 0 12px 0; color: white; font-weight: 500;">With FK94 Security you get:</p>
+                    <p style="margin: 0;">✓ Free OPSEC Checklist (50+ items)</p>
+                    <p style="margin: 4px 0 0 0;">✓ Security Hardening Scripts</p>
+                    <p style="margin: 4px 0 0 0;">✓ Email breach scanning</p>
+                    <p style="margin: 4px 0 0 0;">✓ Dark web monitoring</p>
+                  </td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+
+          <!-- Footer -->
+          <tr>
+            <td align="center" style="padding-top: 30px;">
+              <p style="margin: 0; color: #52525b; font-size: 12px;">
+                FK94 Security - OPSEC & Privacy tools for everyone.
+              </p>
+            </td>
+          </tr>
+        </table>
+      </td>
+    </tr>
+  </table>
+</body>
+</html>
