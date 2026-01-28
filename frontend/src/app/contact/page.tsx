@@ -30,7 +30,7 @@ export default function ContactPage() {
           <div className="max-w-6xl mx-auto px-4 text-center">
             <h1 className="text-5xl font-bold mb-6">Contact Us</h1>
             <p className="text-xl text-zinc-400 max-w-2xl mx-auto">
-              Have questions? We're here to help. Get in touch with our team.
+              Have questions? We&apos;re here to help. Get in touch with our team.
             </p>
           </div>
         </section>
@@ -43,7 +43,7 @@ export default function ContactPage() {
                 <h2 className="text-2xl font-bold mb-6">Get in Touch</h2>
                 <p className="text-zinc-400 mb-8">
                   Whether you have questions about our services, need technical support,
-                  or want to discuss enterprise solutions, we're here to help.
+                  or want to discuss enterprise solutions, we&apos;re here to help.
                 </p>
 
                 <div className="space-y-6">
@@ -115,7 +115,7 @@ export default function ContactPage() {
                       </svg>
                     </div>
                     <h3 className="text-2xl font-bold mb-2">Message Sent!</h3>
-                    <p className="text-zinc-400">We'll get back to you as soon as possible.</p>
+                    <p className="text-zinc-400">We&apos;ll get back to you as soon as possible.</p>
                   </div>
                 ) : (
                   <form onSubmit={handleSubmit} className="space-y-6">
