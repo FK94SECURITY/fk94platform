@@ -109,6 +109,15 @@ Y el 60% de esos passwords ya están en bases de datos filtradas.
 2. [ ] Crear cuenta de Supabase y configurar auth
 3. [ ] Probar el flujo completo: registro → scan → resultados
 
+### Esta Semana (Supabase)
+1. [ ] Crear proyecto en https://supabase.com
+2. [ ] Ejecutar `supabase_schema.sql` en SQL Editor
+3. [ ] Copiar URL y Anon Key
+4. [ ] Agregar a Vercel como variables:
+   - `NEXT_PUBLIC_SUPABASE_URL`
+   - `NEXT_PUBLIC_SUPABASE_ANON_KEY`
+5. [ ] Redeploy en Vercel
+
 ### Este Mes
 1. [ ] Conseguir API key de Hunter.io ($49/mes)
 2. [ ] Agregar más APIs de OSINT
