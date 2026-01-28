@@ -140,4 +140,48 @@ Rasperito sigue corriendo en el Pi. Podés hablarle por Telegram si necesitás a
 
 ---
 
+---
+
+## Estado Técnico Detallado
+
+### Backend (Python/FastAPI)
+- **main.py**: Entry point con CORS configurado
+- **services/osint_service.py**: HIBP, Dehashed, Hunter.io integrados
+- **services/deepseek_service.py**: AI analysis funcional
+- **services/scoring_service.py**: Algoritmo de security score
+- **services/pdf_service.py**: Generación de reportes PDF
+- **services/stripe_service.py**: Checkout y subscriptions
+- **services/truecaller_service.py**: Phone lookup
+
+### Frontend (Next.js 16 + Tailwind)
+- **10 páginas** completas con i18n (ES/EN)
+- **Supabase auth** configurado
+- **Stripe checkout** integrado
+- **localStorage** para guardar progreso del checklist
+- **Responsive** design
+
+### Checklist OPSEC
+- **54 items** en 8 categorías
+- Intro animado con protocolo FK94
+- Filtros por prioridad (Essential/Recommended/Advanced)
+- Progreso guardado localmente
+
+### Scripts de Hardening
+- macOS, Windows, Linux
+- Personalizados según 6 preguntas
+- Descargables directamente
+
+---
+
+## Decisiones de Diseño
+
+1. **Freemium model**: Checklist + hardening scripts gratis, scans pagos
+2. **Pricing**: $10/mes Pro (ilimitado)
+3. **Target**: Profesionales, crypto holders, privacy-conscious
+4. **i18n**: Español e inglés nativos
+5. **Auth opcional**: Las herramientas gratis no requieren cuenta
+
+---
+
 *Generado automáticamente - 28 Enero 2026*
+*Última actualización: 8:30 AM*
