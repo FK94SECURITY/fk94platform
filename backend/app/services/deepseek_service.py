@@ -19,9 +19,10 @@ REGLAS:
 
 class DeepSeekService:
     def __init__(self):
-        self.api_key = settings.DEEPSEEK_API_KEY
-        self.base_url = settings.DEEPSEEK_BASE_URL
-        self.model = settings.DEEPSEEK_MODEL
+        # Use Moonshot/Kimi K2.5 if available, fallback to DeepSeek
+        self.api_key = settings.AI_API_KEY or settings.DEEPSEEK_API_KEY
+        self.base_url = settings.AI_BASE_URL if settings.AI_API_KEY else settings.DEEPSEEK_BASE_URL
+        self.model = settings.AI_MODEL if settings.AI_API_KEY else settings.DEEPSEEK_MODEL
 
     async def analyze(self, prompt: str, context: Optional[dict] = None) -> str:
         """Send a prompt to DeepSeek and get analysis"""

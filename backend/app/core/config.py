@@ -11,7 +11,12 @@ class Settings(BaseSettings):
     APP_NAME: str = "FK94 Security Platform"
     DEBUG: bool = False
 
-    # DeepSeek API
+    # AI API (Moonshot Kimi K2.5)
+    AI_API_KEY: str = ""
+    AI_BASE_URL: str = "https://api.moonshot.ai"
+    AI_MODEL: str = "kimi-k2.5"
+
+    # DeepSeek API (legacy fallback)
     DEEPSEEK_API_KEY: str = ""
     DEEPSEEK_BASE_URL: str = "https://api.deepseek.com"
     DEEPSEEK_MODEL: str = "deepseek-chat"
