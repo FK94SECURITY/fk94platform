@@ -25,10 +25,21 @@ class AuditType(str, Enum):
     WALLET = "wallet"
 
 
+class JobStatus(str, Enum):
+    QUEUED = "queued"
+    RUNNING = "running"
+    COMPLETED = "completed"
+    FAILED = "failed"
+
+
 # === Request Models ===
 
 class EmailCheckRequest(BaseModel):
     email: EmailStr
+
+
+class PasswordCheckRequest(BaseModel):
+    password: str
 
 
 class UsernameCheckRequest(BaseModel):
@@ -70,6 +81,14 @@ class MultiAuditRequest(BaseModel):
     audit_type: AuditType
     value: str
     extra_data: Optional[dict] = None
+
+
+class FullAuditJobRequest(FullAuditRequest):
+    run_at: Optional[datetime] = None
+
+
+class MultiAuditJobRequest(MultiAuditRequest):
+    run_at: Optional[datetime] = None
 
 
 class AIAnalysisRequest(BaseModel):
@@ -210,6 +229,26 @@ class AuditResult(BaseModel):
 class AIResponse(BaseModel):
     response: str
     recommendations: list[str] = []
+
+
+# === Automation ===
+
+class JobCreateResponse(BaseModel):
+    job_id: str
+    status: JobStatus
+    job_type: str
+
+
+class JobInfo(BaseModel):
+    job_id: str
+    status: JobStatus
+    job_type: str
+    run_at: Optional[str] = None
+    created_at: Optional[str] = None
+    started_at: Optional[str] = None
+    finished_at: Optional[str] = None
+    result: Optional[dict] = None
+    error: Optional[str] = None
 
 
 # === API Status ===

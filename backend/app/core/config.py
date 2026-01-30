@@ -45,6 +45,11 @@ class Settings(BaseSettings):
     # Rate limiting
     FREE_CHECKS_PER_DAY: int = 50
 
+    # Job worker / automation
+    JOB_DB_PATH: str = "jobs.sqlite3"
+    JOB_WORKER_POLL_SECONDS: int = 5
+    ENABLE_JOB_WORKER: bool = True
+
     # CORS
     CORS_ORIGINS: list = ["http://localhost:3000", "https://fk94security.com"]
 

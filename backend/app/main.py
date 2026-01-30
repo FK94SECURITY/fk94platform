@@ -7,17 +7,24 @@ from contextlib import asynccontextmanager
 
 from app.core.config import settings
 from app.api.routes import router
+from app.services import job_store
+from app.services.job_worker import job_worker
 
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     """Startup and shutdown events"""
     # Startup
+    job_store.init_db(settings.JOB_DB_PATH)
+    if settings.ENABLE_JOB_WORKER:
+        await job_worker.start()
     print(f"🚀 Starting {settings.APP_NAME}")
     print(f"📡 DeepSeek API: {'✅ Configured' if settings.DEEPSEEK_API_KEY else '❌ Not configured'}")
     print(f"🔍 HIBP API: {'✅ Configured' if settings.HIBP_API_KEY else '⚠️ Using free tier'}")
     yield
     # Shutdown
+    if settings.ENABLE_JOB_WORKER:
+        await job_worker.stop()
     print("👋 Shutting down...")
 
 
@@ -37,10 +44,13 @@ app = FastAPI(
 )
 
 # CORS
+cors_origins = ["*"] if settings.DEBUG else settings.CORS_ORIGINS
+allow_credentials = False if "*" in cors_origins else True
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=settings.CORS_ORIGINS + ["*"],  # Allow all for dev
-    allow_credentials=True,
+    allow_origins=cors_origins,
+    allow_credentials=allow_credentials,
     allow_methods=["*"],
     allow_headers=["*"],
 )

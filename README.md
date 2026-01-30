@@ -66,11 +66,34 @@ npm run dev
 
 ### Backend (.env)
 ```
+AI_API_KEY=sk-xxx
+AI_BASE_URL=https://api.moonshot.ai
+AI_MODEL=kimi-k2.5
 DEEPSEEK_API_KEY=sk-xxx
 HIBP_API_KEY=xxx
 DEHASHED_API_KEY=xxx
 DEHASHED_EMAIL=xxx
 HUNTER_API_KEY=xxx
+JOB_DB_PATH=jobs.sqlite3
+JOB_WORKER_POLL_SECONDS=5
+ENABLE_JOB_WORKER=true
+```
+
+## Automation (Async Jobs)
+
+Endpoints:
+- `POST /api/v1/automation/audit/full` - Enqueue full audit
+- `POST /api/v1/automation/audit/multi` - Enqueue multi audit
+- `GET /api/v1/automation/jobs/{job_id}` - Check job status/result
+
+Example payload:
+```json
+{
+  "email": "you@example.com",
+  "check_breaches": true,
+  "check_osint": true,
+  "run_at": "2026-01-29T15:00:00Z"
+}
 ```
 
 ### Frontend (.env.local)
