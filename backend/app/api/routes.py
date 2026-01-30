@@ -133,7 +133,7 @@ async def check_password_exposure(request: PasswordCheckRequest):
 # === FULL AUDIT ===
 
 @router.post("/audit/full", response_model=AuditResult)
-async def run_full_audit(request: FullAuditRequest):
+async def run_full_audit_endpoint(request: FullAuditRequest):
     """
     Run comprehensive security audit on an email.
     Checks breaches, password exposure, OSINT, and generates AI analysis.
