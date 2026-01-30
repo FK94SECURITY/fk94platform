@@ -53,7 +53,14 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     if (!isSupabaseConfigured) {
       return { error: new Error('Authentication not configured') }
     }
-    const { error } = await supabase.auth.signUp({ email, password })
+    const redirectTo = typeof window !== 'undefined'
+      ? `${window.location.origin}/auth/callback`
+      : 'https://fk94platform.vercel.app/auth/callback'
+    const { error } = await supabase.auth.signUp({
+      email,
+      password,
+      options: { emailRedirectTo: redirectTo }
+    })
     return { error }
   }
 
