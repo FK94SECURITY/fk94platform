@@ -114,16 +114,113 @@ TORNADO_CASH_ADDRESSES: dict[str, str] = {
 CHAINALYSIS_SANCTIONS_ORACLE = "0x40C57923924B5c5c5455c48D93317139ADDaC8fb"
 
 
+async def _fetch_eth_txs_blockscout(client: httpx.AsyncClient, address: str) -> list[dict]:
+    """Fetch transactions from Blockscout (free, no API key required)."""
+    all_txs: list[dict] = []
+    url = f"https://eth.blockscout.com/api/v2/addresses/{address}/transactions"
+    next_page_params = None
+
+    # Paginate up to 10 pages (50 txs per page = 500 max)
+    for _ in range(10):
+        params = dict(next_page_params) if next_page_params else {}
+        resp = await client.get(url, params=params)
+        if resp.status_code != 200:
+            break
+        data = resp.json()
+        items = data.get("items", [])
+        if not items:
+            break
+        all_txs.extend(items)
+        next_page_params = data.get("next_page_params")
+        if not next_page_params:
+            break
+
+    return all_txs
+
+
+async def _fetch_eth_txs_etherscan(client: httpx.AsyncClient, address: str, api_key: str) -> list[dict]:
+    """Fetch transactions from Etherscan V2 API (requires API key)."""
+    resp = await client.get("https://api.etherscan.io/v2/api", params={
+        "chainid": 1,
+        "module": "account",
+        "action": "txlist",
+        "address": address,
+        "startblock": 0,
+        "endblock": 99999999,
+        "page": 1,
+        "offset": 10000,
+        "sort": "asc",
+        "apikey": api_key,
+    })
+    if resp.status_code == 200:
+        data = resp.json()
+        result = data.get("result", [])
+        if isinstance(result, list):
+            return result
+    return []
+
+
+def _parse_blockscout_tx(tx: dict, address: str) -> dict:
+    """Normalize a Blockscout transaction to a common format."""
+    from_addr = (tx.get("from", {}) or {}).get("hash", "").lower()
+    to_addr = (tx.get("to", {}) or {}).get("hash", "").lower()
+    tx_hash = tx.get("hash", "")
+    value_str = tx.get("value", "0")
+    try:
+        value_wei = int(value_str)
+    except (ValueError, TypeError):
+        value_wei = 0
+    value_eth = f"{value_wei / 1e18:.6f} ETH"
+
+    ts_raw = tx.get("timestamp", "")
+    dt_str = None
+    if ts_raw:
+        try:
+            dt = datetime.fromisoformat(ts_raw.replace("Z", "+00:00"))
+            dt_str = dt.strftime("%Y-%m-%d %H:%M")
+        except (ValueError, TypeError):
+            pass
+
+    return {
+        "from": from_addr, "to": to_addr, "hash": tx_hash,
+        "value_eth": value_eth, "dt_str": dt_str,
+    }
+
+
+def _parse_etherscan_tx(tx: dict, address: str) -> dict:
+    """Normalize an Etherscan transaction to a common format."""
+    from_addr = tx.get("from", "").lower()
+    to_addr = tx.get("to", "").lower()
+    tx_hash = tx.get("hash", "")
+    try:
+        value_wei = int(tx.get("value", "0"))
+    except (ValueError, TypeError):
+        value_wei = 0
+    value_eth = f"{value_wei / 1e18:.6f} ETH"
+
+    ts = tx.get("timeStamp", "")
+    dt_str = None
+    if ts:
+        try:
+            dt = datetime.utcfromtimestamp(int(ts))
+            dt_str = dt.strftime("%Y-%m-%d %H:%M")
+        except (ValueError, OSError):
+            pass
+
+    return {
+        "from": from_addr, "to": to_addr, "hash": tx_hash,
+        "value_eth": value_eth, "dt_str": dt_str,
+    }
+
+
 async def deep_scan_eth(address: str) -> dict:
     """
     Deep scan an Ethereum address: fetch transactions and cross-reference
     with known exchange addresses and mixers.
+    Uses Blockscout (free) as primary source, Etherscan V2 as fallback with API key.
     """
     address = address.lower()
     api_key = settings.ETHERSCAN_API_KEY
-    params_base: dict = {"module": "account", "address": address}
-    if api_key:
-        params_base["apikey"] = api_key
 
     exchange_interactions: list[ExchangeInteraction] = []
     mixer_interactions: list[str] = []
@@ -136,87 +233,103 @@ async def deep_scan_eth(address: str) -> dict:
     tx_count = 0
 
     async with httpx.AsyncClient(timeout=30.0) as client:
-        # 1. Get balance
+        # 1. Get balance from Blockscout
         try:
-            resp = await client.get("https://api.etherscan.io/api", params={
-                **params_base, "action": "balance", "tag": "latest"
-            })
+            resp = await client.get(
+                f"https://eth.blockscout.com/api/v2/addresses/{address}"
+            )
             if resp.status_code == 200:
                 data = resp.json()
-                if data.get("status") == "1":
-                    wei = int(data.get("result", 0))
-                    balance = f"{wei / 1e18:.6f} ETH"
+                coin_bal = data.get("coin_balance")
+                if coin_bal:
+                    try:
+                        balance = f"{int(coin_bal) / 1e18:.6f} ETH"
+                    except (ValueError, TypeError):
+                        pass
         except Exception:
             pass
 
-        # 2. Fetch transaction list (up to 10000)
+        # If no balance from Blockscout and we have Etherscan key, try that
+        if balance is None and api_key:
+            try:
+                resp = await client.get("https://api.etherscan.io/v2/api", params={
+                    "chainid": 1, "module": "account", "action": "balance",
+                    "address": address, "tag": "latest", "apikey": api_key,
+                })
+                if resp.status_code == 200:
+                    data = resp.json()
+                    if data.get("status") == "1":
+                        wei = int(data.get("result", 0))
+                        balance = f"{wei / 1e18:.6f} ETH"
+            except Exception:
+                pass
+
+        # 2. Fetch transactions - try Blockscout first, then Etherscan
+        raw_txs: list[dict] = []
+        source = "blockscout"
         try:
-            resp = await client.get("https://api.etherscan.io/api", params={
-                **params_base,
-                "action": "txlist",
-                "startblock": 0,
-                "endblock": 99999999,
-                "page": 1,
-                "offset": 10000,
-                "sort": "asc",
-            })
-            if resp.status_code == 200:
-                data = resp.json()
-                txs = data.get("result", [])
-                if isinstance(txs, list):
-                    tx_count = len(txs)
-
-                    for tx in txs:
-                        from_addr = tx.get("from", "").lower()
-                        to_addr = tx.get("to", "").lower()
-                        tx_hash = tx.get("hash", "")
-                        value_wei = int(tx.get("value", "0"))
-                        value_eth = f"{value_wei / 1e18:.6f} ETH"
-                        ts = tx.get("timeStamp", "")
-
-                        # Track timestamps
-                        if ts:
-                            try:
-                                dt = datetime.utcfromtimestamp(int(ts))
-                                dt_str = dt.strftime("%Y-%m-%d %H:%M")
-                                if first_tx_date is None:
-                                    first_tx_date = dt_str
-                                last_tx_date = dt_str
-                            except (ValueError, OSError):
-                                pass
-
-                        # Determine counterparty
-                        if from_addr == address:
-                            counterparty = to_addr
-                            direction = "sent"
-                        else:
-                            counterparty = from_addr
-                            direction = "received"
-
-                        if counterparty:
-                            counterparties.add(counterparty)
-
-                        # Check exchange match
-                        exchange_name = KNOWN_EXCHANGE_ADDRESSES_ETH.get(counterparty)
-                        if exchange_name:
-                            exchanges_detected.add(exchange_name)
-                            exchange_interactions.append(ExchangeInteraction(
-                                exchange=exchange_name,
-                                address=counterparty,
-                                direction=direction,
-                                tx_hash=tx_hash,
-                                value=value_eth,
-                                timestamp=dt_str if ts else None,
-                            ))
-
-                        # Check mixer match
-                        mixer_name = TORNADO_CASH_ADDRESSES.get(counterparty)
-                        if mixer_name:
-                            mixer_interactions.append(
-                                f"{direction} via {mixer_name} (tx: {tx_hash[:16]}...)"
-                            )
+            raw_txs = await _fetch_eth_txs_blockscout(client, address)
         except Exception as e:
-            warnings.append(f"Error fetching transactions: {str(e)[:80]}")
+            warnings.append(f"Blockscout error: {str(e)[:60]}")
+
+        if not raw_txs and api_key:
+            try:
+                raw_txs = await _fetch_eth_txs_etherscan(client, address, api_key)
+                source = "etherscan"
+            except Exception as e:
+                warnings.append(f"Etherscan error: {str(e)[:60]}")
+
+        # 3. Process transactions
+        tx_count = len(raw_txs)
+        for raw_tx in raw_txs:
+            if source == "blockscout":
+                tx = _parse_blockscout_tx(raw_tx, address)
+            else:
+                tx = _parse_etherscan_tx(raw_tx, address)
+
+            from_addr = tx["from"]
+            to_addr = tx["to"]
+            tx_hash = tx["hash"]
+            value_eth = tx["value_eth"]
+            dt_str = tx["dt_str"]
+
+            # Track timestamps
+            if dt_str:
+                if first_tx_date is None or dt_str < first_tx_date:
+                    first_tx_date = dt_str
+                if last_tx_date is None or dt_str > last_tx_date:
+                    last_tx_date = dt_str
+
+            # Determine counterparty
+            if from_addr == address:
+                counterparty = to_addr
+                direction = "sent"
+            else:
+                counterparty = from_addr
+                direction = "received"
+
+            if counterparty:
+                counterparties.add(counterparty)
+
+            # Check exchange match
+            exchange_name = KNOWN_EXCHANGE_ADDRESSES_ETH.get(counterparty)
+            if exchange_name:
+                exchanges_detected.add(exchange_name)
+                exchange_interactions.append(ExchangeInteraction(
+                    exchange=exchange_name,
+                    address=counterparty,
+                    direction=direction,
+                    tx_hash=tx_hash,
+                    value=value_eth,
+                    timestamp=dt_str,
+                ))
+
+            # Check mixer match
+            mixer_name = TORNADO_CASH_ADDRESSES.get(counterparty)
+            if mixer_name:
+                mixer_interactions.append(
+                    f"{direction} via {mixer_name} (tx: {tx_hash[:16]}...)"
+                )
 
     return {
         "balance": balance,
@@ -341,6 +454,7 @@ async def check_ofac_eth(address: str) -> bool:
 
     try:
         async with httpx.AsyncClient(timeout=15.0) as client:
+            # Try Blockscout first (free, no key)
             params: dict = {
                 "module": "proxy",
                 "action": "eth_call",
@@ -348,10 +462,13 @@ async def check_ofac_eth(address: str) -> bool:
                 "data": call_data,
                 "tag": "latest",
             }
+            api_url = "https://eth.blockscout.com/api"
             if settings.ETHERSCAN_API_KEY:
                 params["apikey"] = settings.ETHERSCAN_API_KEY
+                params["chainid"] = 1
+                api_url = "https://api.etherscan.io/v2/api"
 
-            resp = await client.get("https://api.etherscan.io/api", params=params)
+            resp = await client.get(api_url, params=params)
             if resp.status_code == 200:
                 data = resp.json()
                 result = data.get("result", "0x")
