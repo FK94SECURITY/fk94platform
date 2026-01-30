@@ -1,7 +1,7 @@
 """
 FK94 Security Platform - Audit Runner
 """
-from datetime import datetime
+from datetime import datetime, timezone
 
 from app.models.schemas import (
     AuditResult,
@@ -26,7 +26,7 @@ from app.services.scoring_service import scoring_service
 
 async def run_full_audit(request: FullAuditRequest) -> AuditResult:
     """Run comprehensive security audit on an email."""
-    audit_id = str(datetime.utcnow().timestamp()).replace(".", "")[-8:]
+    audit_id = str(datetime.now(timezone.utc).timestamp()).replace(".", "")[-8:]
     email = request.email
 
     breach_result = None
@@ -68,7 +68,7 @@ async def run_full_audit(request: FullAuditRequest) -> AuditResult:
         audit_type=AuditType.EMAIL,
         query_value=email,
         email=email,
-        timestamp=datetime.now(),
+        timestamp=datetime.now(timezone.utc),
         security_score=security_score,
         breach_check=breach_result,
         password_exposure=password_exposure,
@@ -80,7 +80,7 @@ async def run_full_audit(request: FullAuditRequest) -> AuditResult:
 
 async def run_multi_audit(request: MultiAuditRequest) -> AuditResult:
     """Run audit on different data types: username, phone, domain, name, IP, wallet."""
-    audit_id = str(datetime.utcnow().timestamp()).replace(".", "")[-8:]
+    audit_id = str(datetime.now(timezone.utc).timestamp()).replace(".", "")[-8:]
     audit_type = request.audit_type
     value = request.value
 
@@ -164,7 +164,7 @@ async def run_multi_audit(request: MultiAuditRequest) -> AuditResult:
         id=audit_id,
         audit_type=audit_type,
         query_value=value,
-        timestamp=datetime.now(),
+        timestamp=datetime.now(timezone.utc),
         security_score=security_score,
         username_result=username_result,
         phone_result=phone_result,

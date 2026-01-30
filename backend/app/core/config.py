@@ -27,7 +27,7 @@ class Settings(BaseSettings):
     STRIPE_WEBHOOK_SECRET: str = ""
 
     # OSINT APIs
-    HIBP_API_KEY: str = "b3f9fe6be22f422a9f10ce2120b3b0e7"  # Have I Been Pwned
+    HIBP_API_KEY: str = ""  # Have I Been Pwned - set via HIBP_API_KEY env var
     DEHASHED_API_KEY: str = ""
     DEHASHED_EMAIL: str = ""
     HUNTER_API_KEY: str = ""
@@ -54,7 +54,13 @@ class Settings(BaseSettings):
     ENABLE_JOB_WORKER: bool = True
 
     # CORS
-    CORS_ORIGINS: list = ["*"]
+    CORS_ORIGINS: list = [
+        "https://fk94platform.vercel.app",
+        "https://fk94security.com",
+        "https://www.fk94security.com",
+        "http://localhost:3000",
+        "http://localhost:3001",
+    ]
 
     class Config:
         env_file = ".env"

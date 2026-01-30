@@ -1,11 +1,15 @@
 """
 FK94 Security Platform - API Routes
 """
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, HTTPException, Request
 from fastapi.responses import StreamingResponse
-from datetime import datetime
+from datetime import datetime, timezone
 import uuid
 import io
+from slowapi import Limiter
+from slowapi.util import get_remote_address
+
+limiter = Limiter(key_func=get_remote_address)
 
 from app.models.schemas import (
     EmailCheckRequest, PasswordCheckRequest, FullAuditRequest, AIAnalysisRequest,
@@ -33,7 +37,8 @@ router = APIRouter()
 # === QUICK CHECKS ===
 
 @router.post("/check/email", response_model=BreachCheckResult)
-async def check_email_breaches(request: EmailCheckRequest):
+@limiter.limit("10/minute")
+async def check_email_breaches(request: EmailCheckRequest, req: Request):
     """
     Quick breach check for an email address.
     Returns breach count and risk level.
@@ -46,7 +51,8 @@ async def check_email_breaches(request: EmailCheckRequest):
 
 
 @router.post("/check/username", response_model=UsernameResult)
-async def check_username_endpoint(request: UsernameCheckRequest):
+@limiter.limit("10/minute")
+async def check_username_endpoint(request: UsernameCheckRequest, req: Request):
     """
     Check if a username exists across multiple platforms.
     """
@@ -58,7 +64,8 @@ async def check_username_endpoint(request: UsernameCheckRequest):
 
 
 @router.post("/check/phone", response_model=PhoneResult)
-async def check_phone_endpoint(request: PhoneCheckRequest):
+@limiter.limit("10/minute")
+async def check_phone_endpoint(request: PhoneCheckRequest, req: Request):
     """
     Check phone number information and breaches.
     """
@@ -70,7 +77,8 @@ async def check_phone_endpoint(request: PhoneCheckRequest):
 
 
 @router.post("/check/domain", response_model=DomainResult)
-async def check_domain_endpoint(request: DomainCheckRequest):
+@limiter.limit("10/minute")
+async def check_domain_endpoint(request: DomainCheckRequest, req: Request):
     """
     Check domain security configuration (SSL, DNS, SPF, DMARC).
     """
@@ -82,7 +90,8 @@ async def check_domain_endpoint(request: DomainCheckRequest):
 
 
 @router.post("/check/name", response_model=NameResult)
-async def check_name_endpoint(request: NameCheckRequest):
+@limiter.limit("10/minute")
+async def check_name_endpoint(request: NameCheckRequest, req: Request):
     """
     Search for public information about a person.
     """
@@ -94,7 +103,8 @@ async def check_name_endpoint(request: NameCheckRequest):
 
 
 @router.post("/check/ip", response_model=IPResult)
-async def check_ip_endpoint(request: IPCheckRequest):
+@limiter.limit("10/minute")
+async def check_ip_endpoint(request: IPCheckRequest, req: Request):
     """
     Check IP address reputation and information.
     """
@@ -106,7 +116,8 @@ async def check_ip_endpoint(request: IPCheckRequest):
 
 
 @router.post("/check/wallet", response_model=WalletResult)
-async def check_wallet_endpoint(request: WalletCheckRequest):
+@limiter.limit("10/minute")
+async def check_wallet_endpoint(request: WalletCheckRequest, req: Request):
     """
     Check crypto wallet for identity linking and sanctions.
     """
@@ -118,7 +129,8 @@ async def check_wallet_endpoint(request: WalletCheckRequest):
 
 
 @router.post("/check/password", response_model=PasswordExposure)
-async def check_password_exposure(request: PasswordCheckRequest):
+@limiter.limit("10/minute")
+async def check_password_exposure(request: PasswordCheckRequest, req: Request):
     """
     Check if a password has been exposed in data breaches.
     Uses k-anonymity - password is never sent over the network.
@@ -133,7 +145,8 @@ async def check_password_exposure(request: PasswordCheckRequest):
 # === FULL AUDIT ===
 
 @router.post("/audit/full", response_model=AuditResult)
-async def run_full_audit_endpoint(request: FullAuditRequest):
+@limiter.limit("5/minute")
+async def run_full_audit_endpoint(request: FullAuditRequest, req: Request):
     """
     Run comprehensive security audit on an email.
     Checks breaches, password exposure, OSINT, and generates AI analysis.
@@ -145,7 +158,8 @@ async def run_full_audit_endpoint(request: FullAuditRequest):
 
 
 @router.post("/audit/multi", response_model=AuditResult)
-async def run_multi_audit_endpoint(request: MultiAuditRequest):
+@limiter.limit("5/minute")
+async def run_multi_audit_endpoint(request: MultiAuditRequest, req: Request):
     """
     Run audit on different data types: username, phone, domain, name, or IP.
     """
@@ -274,7 +288,7 @@ async def ai_chat(message: str):
 @router.get("/health")
 async def health_check():
     """API health check"""
-    return {"status": "healthy", "timestamp": datetime.now().isoformat()}
+    return {"status": "healthy", "timestamp": datetime.now(timezone.utc).isoformat()}
 
 
 @router.get("/status/apis")
@@ -334,7 +348,7 @@ async def generate_pdf_report(request: FullAuditRequest):
             audit_type=AuditType.EMAIL,
             query_value=email,
             email=email,
-            timestamp=datetime.now(),
+            timestamp=datetime.now(timezone.utc),
             security_score=security_score,
             breach_check=breach_result,
             password_exposure=password_exposure,
@@ -361,7 +375,6 @@ async def generate_pdf_report(request: FullAuditRequest):
 
 # === STRIPE PAYMENTS ===
 
-from fastapi import Request
 from pydantic import BaseModel
 
 

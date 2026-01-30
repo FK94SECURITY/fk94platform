@@ -1,14 +1,19 @@
 """
 FK94 Security Platform - Main Application
 """
-from fastapi import FastAPI
+from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 from contextlib import asynccontextmanager
+from slowapi import Limiter, _rate_limit_exceeded_handler
+from slowapi.util import get_remote_address
+from slowapi.errors import RateLimitExceeded
 
 from app.core.config import settings
 from app.api.routes import router
 from app.services import job_store
 from app.services.job_worker import job_worker
+
+limiter = Limiter(key_func=get_remote_address, default_limits=["60/minute"])
 
 
 @asynccontextmanager
@@ -19,8 +24,9 @@ async def lifespan(app: FastAPI):
     if settings.ENABLE_JOB_WORKER:
         await job_worker.start()
     print(f"🚀 Starting {settings.APP_NAME}")
-    print(f"📡 DeepSeek API: {'✅ Configured' if settings.DEEPSEEK_API_KEY else '❌ Not configured'}")
-    print(f"🔍 HIBP API: {'✅ Configured' if settings.HIBP_API_KEY else '⚠️ Using free tier'}")
+    print(f"🤖 AI API: {'✅ Configured' if settings.AI_API_KEY else ('📡 DeepSeek' if settings.DEEPSEEK_API_KEY else '❌ Not configured')}")
+    print(f"🔍 HIBP API: {'✅ Configured' if settings.HIBP_API_KEY else '⚠️ Not configured'}")
+    print(f"🔒 Rate Limiting: ✅ Enabled (60 req/min general, 10 req/min checks, 5 req/min audits)")
     yield
     # Shutdown
     if settings.ENABLE_JOB_WORKER:
@@ -42,6 +48,10 @@ app = FastAPI(
     version="1.0.0",
     lifespan=lifespan
 )
+
+# Rate limiting
+app.state.limiter = limiter
+app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
 
 # CORS
 cors_origins = ["*"] if settings.DEBUG else settings.CORS_ORIGINS

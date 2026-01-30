@@ -1,10 +1,11 @@
 """
 FK94 Security Platform - Data Models
 """
-from pydantic import BaseModel, EmailStr
+from pydantic import BaseModel, EmailStr, field_validator
 from typing import Optional, List
 from datetime import datetime
 from enum import Enum
+import re
 
 
 class RiskLevel(str, Enum):
@@ -41,9 +42,26 @@ class EmailCheckRequest(BaseModel):
 class PasswordCheckRequest(BaseModel):
     password: str
 
+    @field_validator("password")
+    @classmethod
+    def validate_password(cls, v: str) -> str:
+        if not v or len(v) > 256:
+            raise ValueError("Password must be 1-256 characters")
+        return v
+
 
 class UsernameCheckRequest(BaseModel):
     username: str
+
+    @field_validator("username")
+    @classmethod
+    def validate_username(cls, v: str) -> str:
+        v = v.strip()
+        if not v or len(v) > 100:
+            raise ValueError("Username must be 1-100 characters")
+        if not re.match(r'^[\w.\-]+$', v):
+            raise ValueError("Username contains invalid characters")
+        return v
 
 
 class PhoneCheckRequest(BaseModel):
@@ -54,6 +72,14 @@ class PhoneCheckRequest(BaseModel):
 class DomainCheckRequest(BaseModel):
     domain: str
 
+    @field_validator("domain")
+    @classmethod
+    def validate_domain(cls, v: str) -> str:
+        v = v.strip().lower()
+        if not re.match(r'^[a-z0-9]([a-z0-9\-]{0,61}[a-z0-9])?(\.[a-z]{2,})+$', v):
+            raise ValueError("Invalid domain format")
+        return v
+
 
 class NameCheckRequest(BaseModel):
     full_name: str
@@ -63,10 +89,53 @@ class NameCheckRequest(BaseModel):
 class IPCheckRequest(BaseModel):
     ip_address: str
 
+    @field_validator("ip_address")
+    @classmethod
+    def validate_ip(cls, v: str) -> str:
+        v = v.strip()
+        # IPv4 basic validation
+        if re.match(r'^(\d{1,3}\.){3}\d{1,3}$', v):
+            parts = v.split(".")
+            if all(0 <= int(p) <= 255 for p in parts):
+                return v
+        # IPv6 basic validation
+        if ":" in v and len(v) <= 45:
+            return v
+        raise ValueError("Invalid IP address format")
+
 
 class WalletCheckRequest(BaseModel):
     address: str
     chain: str = "ethereum"  # ethereum, bitcoin, solana, etc.
+
+    @field_validator("address")
+    @classmethod
+    def validate_address(cls, v: str) -> str:
+        v = v.strip()
+        if not v or len(v) > 128:
+            raise ValueError("Invalid wallet address")
+        # ETH-like
+        if v.startswith("0x") and len(v) == 42:
+            return v
+        # BTC legacy
+        if v.startswith(("1", "3")) and 25 <= len(v) <= 34:
+            return v
+        # BTC bech32
+        if v.startswith("bc1") and 42 <= len(v) <= 62:
+            return v
+        # Solana
+        if len(v) >= 32 and len(v) <= 44 and re.match(r'^[1-9A-HJ-NP-Za-km-z]+$', v):
+            return v
+        raise ValueError("Unrecognized wallet address format")
+
+    @field_validator("chain")
+    @classmethod
+    def validate_chain(cls, v: str) -> str:
+        allowed = {"ethereum", "bitcoin", "solana", "polygon", "bsc"}
+        v = v.strip().lower()
+        if v not in allowed:
+            raise ValueError(f"Unsupported chain. Use: {', '.join(allowed)}")
+        return v
 
 
 class FullAuditRequest(BaseModel):
