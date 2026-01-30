@@ -54,7 +54,7 @@ class Settings(BaseSettings):
     ENABLE_JOB_WORKER: bool = True
 
     # CORS
-    CORS_ORIGINS: list = ["http://localhost:3000", "https://fk94security.com"]
+    CORS_ORIGINS: list = ["*"]
 
     class Config:
         env_file = ".env"
