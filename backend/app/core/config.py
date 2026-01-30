@@ -34,6 +34,9 @@ class Settings(BaseSettings):
     WHOISXML_API_KEY: str = ""
     INTELLIGENCE_X_API_KEY: str = ""
 
+    # Etherscan (optional, free tier: 5 req/s with key, 1 req/5s without)
+    ETHERSCAN_API_KEY: str = ""
+
     # Truecaller (método directo - opcional)
     TRUECALLER_TOKEN: str = ""
 

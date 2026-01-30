@@ -11,7 +11,7 @@ from datetime import datetime
 from typing import Optional
 from app.models.schemas import (
     RiskLevel, UsernameResult, PhoneResult, DomainResult,
-    NameResult, IPResult, WalletResult
+    NameResult, IPResult, WalletResult, ExchangeInteraction
 )
 
 # Common platforms to check for username
@@ -369,15 +369,14 @@ async def check_ip(ip_address: str) -> IPResult:
 
 
 async def check_wallet(address: str, chain: str = "ethereum") -> WalletResult:
-    """Check crypto wallet for identity linking and sanctions"""
-    balance = None
-    transaction_count = None
-    linked_addresses = []
-    labeled = False
-    label = None
-    sanctions_check = False
+    """Check crypto wallet with deep scan: exchange interactions, mixers, OFAC, traceability."""
+    from app.services.wallet_deep_scan import (
+        deep_scan_eth, deep_scan_btc, check_ofac_eth,
+        calculate_traceability_score, calculate_wallet_risk,
+        KNOWN_EXCHANGE_ADDRESSES_ETH, KNOWN_EXCHANGE_ADDRESSES_BTC,
+    )
 
-    # Detect chain from address format if not specified
+    # Detect chain from address format
     if address.startswith("0x") and len(address) == 42:
         chain = "ethereum"
     elif address.startswith("bc1") or address.startswith("1") or address.startswith("3"):
@@ -385,121 +384,72 @@ async def check_wallet(address: str, chain: str = "ethereum") -> WalletResult:
     elif len(address) >= 32 and len(address) <= 44 and not address.startswith("0x"):
         chain = "solana"
 
-    async with httpx.AsyncClient(timeout=10.0) as client:
-        # For Ethereum addresses, use Etherscan API (free tier)
+    scan_result: dict = {}
+    ofac_sanctioned = False
+    warnings: list[str] = []
+
+    try:
         if chain == "ethereum":
-            try:
-                # Get balance from Etherscan (no API key needed for basic queries)
-                response = await client.get(
-                    f"https://api.etherscan.io/api",
-                    params={
-                        "module": "account",
-                        "action": "balance",
-                        "address": address,
-                        "tag": "latest"
-                    }
-                )
-                if response.status_code == 200:
-                    data = response.json()
-                    if data.get("status") == "1":
-                        wei_balance = int(data.get("result", 0))
-                        eth_balance = wei_balance / 1e18
-                        balance = f"{eth_balance:.4f} ETH"
-
-                # Get transaction count
-                response = await client.get(
-                    f"https://api.etherscan.io/api",
-                    params={
-                        "module": "account",
-                        "action": "txlist",
-                        "address": address,
-                        "startblock": 0,
-                        "endblock": 99999999,
-                        "page": 1,
-                        "offset": 1,
-                        "sort": "desc"
-                    }
-                )
-                if response.status_code == 200:
-                    data = response.json()
-                    if data.get("status") == "1":
-                        # Get total count via another call
-                        response2 = await client.get(
-                            f"https://api.etherscan.io/api",
-                            params={
-                                "module": "account",
-                                "action": "txlist",
-                                "address": address,
-                                "startblock": 0,
-                                "endblock": 99999999,
-                                "page": 1,
-                                "offset": 10000,
-                                "sort": "asc"
-                            }
-                        )
-                        if response2.status_code == 200:
-                            data2 = response2.json()
-                            if data2.get("result"):
-                                transaction_count = len(data2.get("result", []))
-
-                # Check known labeled addresses (exchanges, contracts)
-                known_addresses = {
-                    "0xde0b295669a9fd93d5f28d9ec85e40f4cb697bae": ("Ethereum Foundation", True),
-                    "0x3f5ce5fbfe3e9af3971dd833d26ba9b5c936f0be": ("Binance", True),
-                    "0xd24400ae8bfebb18ca49be86258a3c749cf46853": ("Gemini", True),
-                    "0x267be1c1d684f78cb4f6a176c4911b741e4ffdc0": ("Kraken", True),
-                }
-                addr_lower = address.lower()
-                if addr_lower in known_addresses:
-                    label, labeled = known_addresses[addr_lower]
-
-            except Exception as e:
-                print(f"Etherscan error: {e}")
-
+            scan_result = await deep_scan_eth(address)
+            ofac_sanctioned = await check_ofac_eth(address)
         elif chain == "bitcoin":
-            try:
-                # Check blockchain.info for basic info
-                response = await client.get(
-                    f"https://blockchain.info/rawaddr/{address}?limit=0"
-                )
-                if response.status_code == 200:
-                    data = response.json()
-                    balance = str(data.get("final_balance", 0) / 100000000) + " BTC"
-                    transaction_count = data.get("n_tx", 0)
-            except:
-                pass
+            scan_result = await deep_scan_btc(address)
+        else:
+            warnings.append(f"Deep scan not supported for {chain} yet")
+    except Exception as e:
+        warnings.append(f"Deep scan error: {str(e)[:80]}")
 
-    # Calculate risk
-    # High risk if wallet is labeled (means identity is potentially known)
-    # High risk if sanctioned
-    risk_factors = 0
+    # Check if the address itself is a known exchange
+    addr_lower = address.lower()
+    labeled = False
+    label = None
+    if chain == "ethereum" and addr_lower in KNOWN_EXCHANGE_ADDRESSES_ETH:
+        labeled = True
+        label = KNOWN_EXCHANGE_ADDRESSES_ETH[addr_lower]
+    elif chain == "bitcoin" and address in KNOWN_EXCHANGE_ADDRESSES_BTC:
+        labeled = True
+        label = KNOWN_EXCHANGE_ADDRESSES_BTC[address]
 
-    if labeled:
-        risk_factors += 2
-    if sanctions_check:
-        risk_factors += 3
-    if transaction_count and transaction_count > 100:
-        risk_factors += 1  # High activity = more visibility
-    if linked_addresses:
-        risk_factors += len(linked_addresses)
+    # Calculate traceability
+    traceability_score, traceability_details = calculate_traceability_score(
+        scan_result, ofac_sanctioned
+    )
 
-    if risk_factors >= 3 or sanctions_check:
-        risk_level = RiskLevel.HIGH
-    elif risk_factors >= 2 or labeled:
-        risk_level = RiskLevel.MEDIUM
-    elif risk_factors >= 1:
-        risk_level = RiskLevel.LOW
-    else:
-        risk_level = RiskLevel.SAFE
+    exchanges_detected = scan_result.get("exchanges_detected", [])
+    used_mixer = scan_result.get("used_mixer", False)
+
+    risk_level = calculate_wallet_risk(
+        traceability_score, ofac_sanctioned, used_mixer, exchanges_detected
+    )
+
+    all_warnings = scan_result.get("warnings", []) + warnings
+    if ofac_sanctioned:
+        all_warnings.insert(0, "ADDRESS IS OFAC SANCTIONED")
+    if used_mixer:
+        all_warnings.insert(0, "Mixer (Tornado Cash) usage detected")
 
     return WalletResult(
         address=address,
         chain=chain,
-        balance=balance,
-        transaction_count=transaction_count,
-        linked_addresses=linked_addresses,
+        balance=scan_result.get("balance"),
+        transaction_count=scan_result.get("tx_count"),
+        linked_addresses=[],
         labeled=labeled,
         label=label,
-        sanctions_check=sanctions_check,
-        risk_level=risk_level
+        sanctions_check=ofac_sanctioned,
+        risk_level=risk_level,
+        # Deep scan fields
+        deep_scan=True,
+        exchange_interactions=scan_result.get("exchange_interactions", []),
+        exchanges_detected=exchanges_detected,
+        is_traceable=traceability_score >= 30,
+        traceability_score=traceability_score,
+        traceability_details=traceability_details,
+        mixer_interactions=scan_result.get("mixer_interactions", []),
+        used_mixer=used_mixer,
+        ofac_sanctioned=ofac_sanctioned,
+        first_tx_date=scan_result.get("first_tx_date"),
+        last_tx_date=scan_result.get("last_tx_date"),
+        unique_counterparties=scan_result.get("counterparties", 0),
+        scan_warnings=all_warnings,
     )

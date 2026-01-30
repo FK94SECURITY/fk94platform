@@ -92,6 +92,15 @@ export interface IPResult {
   risk_level: string;
 }
 
+export interface ExchangeInteraction {
+  exchange: string;
+  address: string;
+  direction: string;
+  tx_hash: string;
+  value?: string;
+  timestamp?: string;
+}
+
 export interface WalletResult {
   address: string;
   chain: string;
@@ -102,6 +111,20 @@ export interface WalletResult {
   label?: string;
   sanctions_check: boolean;
   risk_level: string;
+  // Deep scan fields
+  deep_scan: boolean;
+  exchange_interactions: ExchangeInteraction[];
+  exchanges_detected: string[];
+  is_traceable: boolean;
+  traceability_score: number;
+  traceability_details: string[];
+  mixer_interactions: string[];
+  used_mixer: boolean;
+  ofac_sanctioned: boolean;
+  first_tx_date?: string;
+  last_tx_date?: string;
+  unique_counterparties: number;
+  scan_warnings: string[];
 }
 
 export interface PasswordExposure {

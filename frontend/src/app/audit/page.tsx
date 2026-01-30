@@ -681,42 +681,248 @@ function renderTypeSpecificResults(result: AuditResult, language: 'en' | 'es') {
     );
   }
 
-  // Wallet results
+  // Wallet results (deep scan)
   if (result.wallet_result) {
     const wr = result.wallet_result;
+    const scoreColor = wr.traceability_score >= 70 ? 'text-red-400' : wr.traceability_score >= 40 ? 'text-yellow-400' : wr.traceability_score >= 10 ? 'text-blue-400' : 'text-emerald-400';
+    const scoreBg = wr.traceability_score >= 70 ? 'border-red-500' : wr.traceability_score >= 40 ? 'border-yellow-500' : wr.traceability_score >= 10 ? 'border-blue-500' : 'border-emerald-500';
+    const gaugePercent = wr.traceability_score;
+
     return (
-      <div className="bg-zinc-900/50 rounded-2xl border border-zinc-800 p-8">
-        <h2 className="text-xl font-bold mb-6">
-          {language === 'es' ? 'Información del Wallet' : 'Wallet Information'}
-        </h2>
-        <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
-          <div className="bg-zinc-800 p-4 rounded-lg">
-            <p className="text-sm text-zinc-400">Chain</p>
-            <p className="font-semibold">{wr.chain}</p>
+      <div className="space-y-6">
+        {/* Traceability Banner */}
+        {wr.is_traceable && (
+          <div className="bg-red-500/10 border-2 border-red-500/40 rounded-2xl p-6 text-center">
+            <p className="text-3xl mb-2">&#9888;</p>
+            <h3 className="text-2xl font-bold text-red-400 mb-2">
+              {language === 'es' ? 'POTENCIALMENTE RASTREABLE' : 'POTENTIALLY TRACEABLE'}
+            </h3>
+            <p className="text-zinc-400">
+              {language === 'es'
+                ? `Esta wallet interactuó con ${wr.exchanges_detected.length} exchange(s) con KYC. Las autoridades podrían vincular esta dirección a una identidad real.`
+                : `This wallet interacted with ${wr.exchanges_detected.length} KYC exchange(s). Authorities could link this address to a real identity.`}
+            </p>
+            {wr.exchanges_detected.length > 0 && (
+              <div className="flex flex-wrap justify-center gap-2 mt-3">
+                {wr.exchanges_detected.map((ex, i) => (
+                  <span key={i} className="px-3 py-1 bg-red-500/20 border border-red-500/30 rounded-full text-red-300 text-sm font-medium">
+                    {ex}
+                  </span>
+                ))}
+              </div>
+            )}
           </div>
-          {wr.balance && (
-            <div className="bg-zinc-800 p-4 rounded-lg">
-              <p className="text-sm text-zinc-400">Balance</p>
-              <p className="font-semibold">{wr.balance}</p>
+        )}
+
+        {/* OFAC Warning */}
+        {wr.ofac_sanctioned && (
+          <div className="bg-red-600/20 border-2 border-red-600/60 rounded-2xl p-6 text-center">
+            <p className="text-3xl mb-2">&#128683;</p>
+            <h3 className="text-2xl font-bold text-red-500">
+              {language === 'es' ? 'DIRECCION SANCIONADA POR OFAC' : 'OFAC SANCTIONED ADDRESS'}
+            </h3>
+            <p className="text-red-300 mt-2">
+              {language === 'es'
+                ? 'Esta dirección está en la lista de sanciones de la OFAC (Chainalysis Oracle).'
+                : 'This address is on the OFAC sanctions list (Chainalysis Oracle).'}
+            </p>
+          </div>
+        )}
+
+        {/* Mixer Warning */}
+        {wr.used_mixer && (
+          <div className="bg-yellow-500/10 border-2 border-yellow-500/40 rounded-2xl p-6 text-center">
+            <p className="text-3xl mb-2">&#127744;</p>
+            <h3 className="text-xl font-bold text-yellow-400">
+              {language === 'es' ? 'USO DE MIXER DETECTADO' : 'MIXER USAGE DETECTED'}
+            </h3>
+            <p className="text-zinc-400 mt-2">
+              {language === 'es'
+                ? 'Esta wallet interactuó con Tornado Cash (mixer). Esto no es ilegal en todas las jurisdicciones, pero es una red flag.'
+                : 'This wallet interacted with Tornado Cash (mixer). This is not illegal in all jurisdictions, but is a red flag.'}
+            </p>
+          </div>
+        )}
+
+        {/* Traceability Score Gauge */}
+        <div className="bg-zinc-900/50 rounded-2xl border border-zinc-800 p-8">
+          <h2 className="text-xl font-bold mb-6 text-center">
+            {language === 'es' ? 'Score de Rastreabilidad' : 'Traceability Score'}
+          </h2>
+          <div className="flex flex-col items-center mb-6">
+            <div className={`relative w-32 h-32 rounded-full border-4 ${scoreBg} flex items-center justify-center`}>
+              <div className="text-center">
+                <p className={`text-3xl font-bold ${scoreColor}`}>{wr.traceability_score}</p>
+                <p className="text-xs text-zinc-400">/100</p>
+              </div>
+            </div>
+            <p className={`mt-3 font-semibold ${scoreColor}`}>
+              {wr.traceability_score >= 70
+                ? (language === 'es' ? 'ALTA RASTREABILIDAD' : 'HIGH TRACEABILITY')
+                : wr.traceability_score >= 40
+                ? (language === 'es' ? 'RASTREABILIDAD MEDIA' : 'MEDIUM TRACEABILITY')
+                : wr.traceability_score >= 10
+                ? (language === 'es' ? 'RASTREABILIDAD BAJA' : 'LOW TRACEABILITY')
+                : (language === 'es' ? 'ANONIMO' : 'ANONYMOUS')}
+            </p>
+            {/* Progress bar */}
+            <div className="w-full max-w-md mt-4">
+              <div className="w-full bg-zinc-800 rounded-full h-3">
+                <div
+                  className={`h-3 rounded-full transition-all ${
+                    gaugePercent >= 70 ? 'bg-red-500' : gaugePercent >= 40 ? 'bg-yellow-500' : gaugePercent >= 10 ? 'bg-blue-500' : 'bg-emerald-500'
+                  }`}
+                  style={{ width: `${gaugePercent}%` }}
+                />
+              </div>
+              <div className="flex justify-between text-xs text-zinc-500 mt-1">
+                <span>{language === 'es' ? 'Anónimo' : 'Anonymous'}</span>
+                <span>{language === 'es' ? 'Rastreable' : 'Traceable'}</span>
+              </div>
+            </div>
+          </div>
+
+          {/* Traceability Details */}
+          {wr.traceability_details && wr.traceability_details.length > 0 && (
+            <div className="space-y-2 mt-4">
+              <h3 className="font-semibold text-zinc-300 mb-2">
+                {language === 'es' ? 'Detalles:' : 'Details:'}
+              </h3>
+              {wr.traceability_details.map((detail, i) => (
+                <p key={i} className="text-zinc-400 text-sm flex items-start gap-2">
+                  <span className="text-zinc-500">&bull;</span> {detail}
+                </p>
+              ))}
             </div>
           )}
-          <div className={`p-4 rounded-lg ${wr.labeled ? 'bg-yellow-500/10 border border-yellow-500/20' : 'bg-emerald-500/10 border border-emerald-500/20'}`}>
-            <p className="text-sm text-zinc-400">{language === 'es' ? 'Etiquetado' : 'Labeled'}</p>
-            <p className={`font-semibold ${wr.labeled ? 'text-yellow-400' : 'text-emerald-400'}`}>
-              {wr.labeled ? (wr.label || (language === 'es' ? 'Sí' : 'Yes')) : (language === 'es' ? 'No' : 'No')}
-            </p>
-          </div>
-          <div className={`p-4 rounded-lg ${wr.sanctions_check ? 'bg-red-500/10 border border-red-500/20' : 'bg-emerald-500/10 border border-emerald-500/20'}`}>
-            <p className="text-sm text-zinc-400">{language === 'es' ? 'Sanciones' : 'Sanctions'}</p>
-            <p className={`font-semibold ${wr.sanctions_check ? 'text-red-400' : 'text-emerald-400'}`}>
-              {wr.sanctions_check ? (language === 'es' ? 'Detectado' : 'Flagged') : (language === 'es' ? 'Limpio' : 'Clean')}
-            </p>
-          </div>
-          <div className="bg-zinc-800 p-4 rounded-lg">
-            <p className="text-sm text-zinc-400">{language === 'es' ? 'Direcciones Vinculadas' : 'Linked Addresses'}</p>
-            <p className="font-semibold">{wr.linked_addresses.length}</p>
+        </div>
+
+        {/* Wallet Basic Info */}
+        <div className="bg-zinc-900/50 rounded-2xl border border-zinc-800 p-8">
+          <h2 className="text-xl font-bold mb-6">
+            {language === 'es' ? 'Información del Wallet' : 'Wallet Information'}
+          </h2>
+          <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
+            <div className="bg-zinc-800 p-4 rounded-lg">
+              <p className="text-sm text-zinc-400">Chain</p>
+              <p className="font-semibold capitalize">{wr.chain}</p>
+            </div>
+            {wr.balance && (
+              <div className="bg-zinc-800 p-4 rounded-lg">
+                <p className="text-sm text-zinc-400">Balance</p>
+                <p className="font-semibold">{wr.balance}</p>
+              </div>
+            )}
+            <div className="bg-zinc-800 p-4 rounded-lg">
+              <p className="text-sm text-zinc-400">{language === 'es' ? 'Transacciones' : 'Transactions'}</p>
+              <p className="font-semibold">{wr.transaction_count ?? 'N/A'}</p>
+            </div>
+            <div className="bg-zinc-800 p-4 rounded-lg">
+              <p className="text-sm text-zinc-400">{language === 'es' ? 'Contrapartes Únicas' : 'Unique Counterparties'}</p>
+              <p className="font-semibold">{wr.unique_counterparties}</p>
+            </div>
+            {wr.first_tx_date && (
+              <div className="bg-zinc-800 p-4 rounded-lg">
+                <p className="text-sm text-zinc-400">{language === 'es' ? 'Primera TX' : 'First TX'}</p>
+                <p className="font-semibold text-sm">{wr.first_tx_date}</p>
+              </div>
+            )}
+            {wr.last_tx_date && (
+              <div className="bg-zinc-800 p-4 rounded-lg">
+                <p className="text-sm text-zinc-400">{language === 'es' ? 'Última TX' : 'Last TX'}</p>
+                <p className="font-semibold text-sm">{wr.last_tx_date}</p>
+              </div>
+            )}
+            <div className={`p-4 rounded-lg ${wr.labeled ? 'bg-yellow-500/10 border border-yellow-500/20' : 'bg-zinc-800'}`}>
+              <p className="text-sm text-zinc-400">{language === 'es' ? 'Etiquetado' : 'Labeled'}</p>
+              <p className={`font-semibold ${wr.labeled ? 'text-yellow-400' : ''}`}>
+                {wr.labeled ? (wr.label || (language === 'es' ? 'Sí' : 'Yes')) : (language === 'es' ? 'No' : 'No')}
+              </p>
+            </div>
+            <div className={`p-4 rounded-lg ${wr.ofac_sanctioned ? 'bg-red-500/10 border border-red-500/20' : 'bg-emerald-500/10 border border-emerald-500/20'}`}>
+              <p className="text-sm text-zinc-400">OFAC</p>
+              <p className={`font-semibold ${wr.ofac_sanctioned ? 'text-red-400' : 'text-emerald-400'}`}>
+                {wr.ofac_sanctioned ? (language === 'es' ? 'SANCIONADO' : 'SANCTIONED') : (language === 'es' ? 'Limpio' : 'Clean')}
+              </p>
+            </div>
           </div>
         </div>
+
+        {/* Exchange Interactions */}
+        {wr.exchange_interactions && wr.exchange_interactions.length > 0 && (
+          <div className="bg-zinc-900/50 rounded-2xl border border-zinc-800 p-8">
+            <h2 className="text-xl font-bold mb-6">
+              {language === 'es'
+                ? `Interacciones con Exchanges (${wr.exchange_interactions.length})`
+                : `Exchange Interactions (${wr.exchange_interactions.length})`}
+            </h2>
+            <div className="space-y-3 max-h-96 overflow-y-auto">
+              {wr.exchange_interactions.slice(0, 50).map((ix, i) => (
+                <div key={i} className="flex items-center gap-3 p-3 bg-zinc-800/50 rounded-lg">
+                  <span className={`text-lg ${ix.direction === 'sent' ? 'text-red-400' : 'text-emerald-400'}`}>
+                    {ix.direction === 'sent' ? '\u2191' : '\u2193'}
+                  </span>
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center gap-2">
+                      <span className="font-semibold text-sm">{ix.exchange}</span>
+                      <span className={`text-xs px-2 py-0.5 rounded-full ${
+                        ix.direction === 'sent'
+                          ? 'bg-red-500/20 text-red-300'
+                          : 'bg-emerald-500/20 text-emerald-300'
+                      }`}>
+                        {ix.direction === 'sent'
+                          ? (language === 'es' ? 'Enviado' : 'Sent')
+                          : (language === 'es' ? 'Recibido' : 'Received')}
+                      </span>
+                    </div>
+                    <p className="text-xs text-zinc-500 truncate">{ix.address}</p>
+                  </div>
+                  {ix.value && <span className="text-sm text-zinc-300 whitespace-nowrap">{ix.value}</span>}
+                  {ix.timestamp && <span className="text-xs text-zinc-500 whitespace-nowrap">{ix.timestamp}</span>}
+                </div>
+              ))}
+              {wr.exchange_interactions.length > 50 && (
+                <p className="text-sm text-zinc-500 text-center">
+                  {language === 'es'
+                    ? `...y ${wr.exchange_interactions.length - 50} interacciones más`
+                    : `...and ${wr.exchange_interactions.length - 50} more interactions`}
+                </p>
+              )}
+            </div>
+          </div>
+        )}
+
+        {/* Mixer Interactions */}
+        {wr.mixer_interactions && wr.mixer_interactions.length > 0 && (
+          <div className="bg-zinc-900/50 rounded-2xl border border-yellow-500/30 p-8">
+            <h2 className="text-xl font-bold mb-6 text-yellow-400">
+              {language === 'es' ? 'Interacciones con Mixer' : 'Mixer Interactions'}
+            </h2>
+            <div className="space-y-2">
+              {wr.mixer_interactions.map((m, i) => (
+                <p key={i} className="text-sm text-zinc-400 flex items-start gap-2">
+                  <span className="text-yellow-400">&bull;</span> {m}
+                </p>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* Scan Warnings */}
+        {wr.scan_warnings && wr.scan_warnings.length > 0 && (
+          <div className="bg-zinc-900/50 rounded-2xl border border-zinc-800 p-8">
+            <h2 className="text-xl font-bold mb-4">
+              {language === 'es' ? 'Advertencias' : 'Warnings'}
+            </h2>
+            <div className="space-y-2">
+              {wr.scan_warnings.map((w, i) => (
+                <p key={i} className="text-sm text-yellow-400 flex items-start gap-2">
+                  <span>&#9888;</span> {w}
+                </p>
+              ))}
+            </div>
+          </div>
+        )}
       </div>
     );
   }

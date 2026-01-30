@@ -184,6 +184,15 @@ class IPResult(BaseModel):
     risk_level: RiskLevel
 
 
+class ExchangeInteraction(BaseModel):
+    exchange: str
+    address: str
+    direction: str  # "sent" or "received"
+    tx_hash: str
+    value: Optional[str] = None
+    timestamp: Optional[str] = None
+
+
 class WalletResult(BaseModel):
     address: str
     chain: str
@@ -194,6 +203,20 @@ class WalletResult(BaseModel):
     label: Optional[str] = None
     sanctions_check: bool = False
     risk_level: RiskLevel
+    # Deep scan fields
+    deep_scan: bool = False
+    exchange_interactions: List[ExchangeInteraction] = []
+    exchanges_detected: List[str] = []
+    is_traceable: bool = False
+    traceability_score: int = 0
+    traceability_details: List[str] = []
+    mixer_interactions: List[str] = []
+    used_mixer: bool = False
+    ofac_sanctioned: bool = False
+    first_tx_date: Optional[str] = None
+    last_tx_date: Optional[str] = None
+    unique_counterparties: int = 0
+    scan_warnings: List[str] = []
 
 
 class SecurityScore(BaseModel):
