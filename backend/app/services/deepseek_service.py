@@ -28,7 +28,7 @@ class DeepSeekService:
         """Send a prompt to DeepSeek and get analysis"""
 
         if not self.api_key:
-            return "Error: DeepSeek API key not configured"
+            return "Error: AI API key not configured (AI_API_KEY o DEEPSEEK_API_KEY)"
 
         # Build context message if audit data provided
         context_msg = ""
@@ -56,7 +56,7 @@ class DeepSeekService:
                     json={
                         "model": self.model,
                         "messages": messages,
-                        "temperature": 0.7,
+                        "temperature": 1,
                         "max_tokens": 600
                     },
                     timeout=60.0
