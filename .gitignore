@@ -32,3 +32,8 @@ npm-debug.log*
 # Build
 dist/
 build/
+
+# Sensitive / sessions
+*.sqlite3
+browser_sessions/
+.env.production
