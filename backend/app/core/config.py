@@ -27,7 +27,7 @@ class Settings(BaseSettings):
     STRIPE_WEBHOOK_SECRET: str = ""
 
     # OSINT APIs
-    HIBP_API_KEY: str = ""  # Have I Been Pwned
+    HIBP_API_KEY: str = "b3f9fe6be22f422a9f10ce2120b3b0e7"  # Have I Been Pwned
     DEHASHED_API_KEY: str = ""
     DEHASHED_EMAIL: str = ""
     HUNTER_API_KEY: str = ""

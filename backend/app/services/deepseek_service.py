@@ -123,6 +123,35 @@ Máximo 150 palabras total."""
             if osint.get("data_brokers"):
                 parts.append(f"Data brokers con tus datos: {len(osint['data_brokers'])}")
 
+        if "wallet_result" in data and data["wallet_result"]:
+            wr = data["wallet_result"]
+            parts.append(f"Tipo de auditoría: WALLET (crypto)")
+            parts.append(f"Wallet: {wr.get('address', 'N/A')}")
+            parts.append(f"Chain: {wr.get('chain', 'N/A')}")
+            parts.append(f"Balance: {wr.get('balance', 'N/A')}")
+            parts.append(f"Transacciones: {wr.get('transaction_count', 0)}")
+            parts.append(f"Traceability Score: {wr.get('traceability_score', 0)}/100")
+            parts.append(f"Es rastreable: {'SÍ' if wr.get('is_traceable') else 'NO'}")
+            exchanges = wr.get('exchanges_detected', [])
+            if exchanges:
+                parts.append(f"Exchanges detectados (KYC): {', '.join(exchanges)}")
+                parts.append(f"Interacciones con exchanges: {len(wr.get('exchange_interactions', []))}")
+            if wr.get('used_mixer'):
+                parts.append("⚠️ Usó mixer (Tornado Cash)")
+            if wr.get('ofac_sanctioned'):
+                parts.append("🚨 DIRECCIÓN SANCIONADA POR OFAC")
+            if wr.get('first_tx_date'):
+                parts.append(f"Primera TX: {wr['first_tx_date']}")
+            if wr.get('last_tx_date'):
+                parts.append(f"Última TX: {wr['last_tx_date']}")
+            parts.append(f"Contrapartes únicas: {wr.get('unique_counterparties', 0)}")
+            details = wr.get('traceability_details', [])
+            if details:
+                parts.append(f"Detalles: {'; '.join(details)}")
+
+        if "audit_type" in data:
+            parts.insert(0, f"Tipo de auditoría: {data['audit_type']}")
+
         return "\n".join(parts)
 
 
