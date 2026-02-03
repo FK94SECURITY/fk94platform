@@ -192,14 +192,14 @@ async def check_domain(domain: str) -> DomainResult:
         try:
             answers = resolver.resolve(domain, 'A')
             dns_records['A'] = [str(r) for r in answers]
-        except:
+        except Exception:
             pass
 
         # MX records
         try:
             answers = resolver.resolve(domain, 'MX')
             dns_records['MX'] = [str(r) for r in answers]
-        except:
+        except Exception:
             pass
 
         # TXT records (for SPF/DKIM)
@@ -211,7 +211,7 @@ async def check_domain(domain: str) -> DomainResult:
             for record in txt_records:
                 if 'v=spf1' in record:
                     spf_configured = True
-        except:
+        except Exception:
             pass
 
         # DMARC
@@ -219,7 +219,7 @@ async def check_domain(domain: str) -> DomainResult:
             answers = resolver.resolve(f'_dmarc.{domain}', 'TXT')
             dmarc_configured = True
             dns_records['DMARC'] = [str(r) for r in answers]
-        except:
+        except Exception:
             pass
 
     except Exception as e:
@@ -328,7 +328,7 @@ async def check_ip(ip_address: str) -> IPResult:
                     org = data.get("org", "").lower()
                     if any(x in org for x in ["hosting", "cloud", "datacenter", "vpn"]):
                         is_vpn = True
-        except:
+        except Exception:
             pass
 
         # Check AbuseIPDB (requires API key)

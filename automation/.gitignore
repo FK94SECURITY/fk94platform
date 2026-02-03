@@ -1,0 +1,7 @@
+# Secrets
+.env
+browser_sessions/
+
+# State and logs
+poster_state.json
+*.log

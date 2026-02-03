@@ -126,18 +126,16 @@ class StripeService:
     async def handle_webhook(self, payload: bytes, sig_header: str) -> dict:
         """Handle Stripe webhook events"""
         if not settings.STRIPE_WEBHOOK_SECRET:
-            # Without webhook secret, just parse the event
-            import json
-            event = json.loads(payload)
-        else:
-            try:
-                event = stripe.Webhook.construct_event(
-                    payload, sig_header, settings.STRIPE_WEBHOOK_SECRET
-                )
-            except ValueError:
-                return {"error": "Invalid payload"}
-            except stripe.error.SignatureVerificationError:
-                return {"error": "Invalid signature"}
+            return {"error": "Webhook secret not configured"}
+
+        try:
+            event = stripe.Webhook.construct_event(
+                payload, sig_header, settings.STRIPE_WEBHOOK_SECRET
+            )
+        except ValueError:
+            return {"error": "Invalid payload"}
+        except stripe.error.SignatureVerificationError:
+            return {"error": "Invalid signature"}
 
         event_type = event.get("type", "")
         data = event.get("data", {}).get("object", {})

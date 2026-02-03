@@ -1,0 +1,628 @@
+{
+  "posts": [
+    {
+      "id": 1,
+      "day": 1,
+      "type": "educativo",
+      "platforms": ["twitter", "linkedin"],
+      "es": {
+        "text": "El 80% de las personas usa el mismo password en más de 10 sitios.\nY el 60% de esos passwords ya están en bases de datos filtradas.\n\n¿Querés saber si el tuyo está expuesto?\n\n1. Entrá a haveibeenpwned.com\n2. Poné tu email\n3. Mirá en cuántos breaches aparecés\n\n#ciberseguridad #privacidad #OSINT"
+      },
+      "en": {
+        "text": "80% of people use the same password across 10+ sites.\nAnd 60% of those passwords are already in leaked databases.\n\nWant to know if yours is exposed?\n\n1. Go to haveibeenpwned.com\n2. Enter your email\n3. See how many breaches you appear in\n\n#cybersecurity #privacy #OSINT"
+      }
+    },
+    {
+      "id": 2,
+      "day": 3,
+      "type": "tips",
+      "platforms": ["twitter", "linkedin"],
+      "es": {
+        "text": "5 cosas que podés hacer HOY para mejorar tu seguridad digital:\n\n1. Activá 2FA en tu email principal (con app, no SMS)\n2. Revisá qué apps tienen acceso a tu Gmail/Outlook\n3. Usá un password manager (Bitwarden es gratis)\n4. Chequeá tu email en haveibeenpwned.com\n5. Activá la verificación en 2 pasos de WhatsApp\n\n#ciberseguridad #tips #privacidad"
+      },
+      "en": {
+        "text": "5 things you can do TODAY to improve your digital security:\n\n1. Enable 2FA on your main email (app-based, not SMS)\n2. Review which apps have access to your Gmail/Outlook\n3. Use a password manager (Bitwarden is free)\n4. Check your email at haveibeenpwned.com\n5. Enable WhatsApp 2-step verification\n\n#cybersecurity #tips #privacy"
+      }
+    },
+    {
+      "id": 3,
+      "day": 5,
+      "type": "dato_impactante",
+      "platforms": ["twitter", "linkedin"],
+      "es": {
+        "text": "En 2024 se filtraron más de 26 MIL MILLONES de registros personales.\n\nNombres, emails, passwords, direcciones, números de teléfono.\n\nLa pregunta no es SI tus datos fueron filtrados.\nLa pregunta es CUÁNTAS VECES.\n\nProtegé tu identidad digital antes de que alguien más la use.\n\n#databreach #ciberseguridad #privacidad"
+      },
+      "en": {
+        "text": "In 2024, over 26 BILLION personal records were leaked.\n\nNames, emails, passwords, addresses, phone numbers.\n\nThe question isn't IF your data was leaked.\nThe question is HOW MANY TIMES.\n\nProtect your digital identity before someone else uses it.\n\n#databreach #cybersecurity #privacy"
+      }
+    },
+    {
+      "id": 4,
+      "day": 7,
+      "type": "producto",
+      "platforms": ["twitter", "linkedin"],
+      "es": {
+        "text": "Construimos FK94 Security: una plataforma que te muestra exactamente dónde están expuestos tus datos.\n\n→ Escaneá tu email en bases de datos filtradas\n→ Detectá passwords comprometidos\n→ Verificá tu huella digital en 300+ plataformas\n→ Recibí un plan de acción personalizado\n\nTu privacidad no debería ser un lujo.\n\n#ciberseguridad #startup #OSINT"
+      },
+      "en": {
+        "text": "We built FK94 Security: a platform that shows you exactly where your data is exposed.\n\n→ Scan your email across leaked databases\n→ Detect compromised passwords\n→ Check your digital footprint on 300+ platforms\n→ Get a personalized action plan\n\nYour privacy shouldn't be a luxury.\n\n#cybersecurity #startup #OSINT"
+      }
+    },
+    {
+      "id": 5,
+      "day": 9,
+      "type": "historia",
+      "platforms": ["twitter", "linkedin"],
+      "es": {
+        "text": "Un amigo me dijo: \"No tengo nada que ocultar, ¿por qué me importaría la privacidad?\"\n\nLe escaneé el email. Aparecía en 12 breaches.\nSu password principal estaba filtrado en texto plano.\nSu nombre, dirección y teléfono estaban en 3 bases de datos públicas.\n\n\"No tengo nada que ocultar\" es el equivalente digital de dejar la puerta de tu casa abierta.\n\n#privacidad #ciberseguridad #OSINT"
+      },
+      "en": {
+        "text": "A friend told me: \"I have nothing to hide, why would I care about privacy?\"\n\nI scanned his email. It appeared in 12 breaches.\nHis main password was leaked in plain text.\nHis name, address, and phone were in 3 public databases.\n\n\"I have nothing to hide\" is the digital equivalent of leaving your front door wide open.\n\n#privacy #cybersecurity #OSINT"
+      }
+    },
+    {
+      "id": 6,
+      "day": 11,
+      "type": "checklist",
+      "platforms": ["twitter", "linkedin"],
+      "es": {
+        "text": "Checklist de seguridad para tu celular:\n\n☐ PIN/biometría activado\n☐ Actualizaciones automáticas ON\n☐ Permisos de apps revisados\n☐ 2FA en apps bancarias\n☐ Bluetooth apagado cuando no usás\n☐ WiFi automático desactivado\n☐ Find My Device activado\n☐ Backup encriptado configurado\n\n¿Cuántos tenés?\n\n#ciberseguridad #mobile #seguridad"
+      },
+      "en": {
+        "text": "Security checklist for your phone:\n\n☐ PIN/biometrics enabled\n☐ Auto-updates ON\n☐ App permissions reviewed\n☐ 2FA on banking apps\n☐ Bluetooth off when not in use\n☐ Auto-join WiFi disabled\n☐ Find My Device enabled\n☐ Encrypted backup configured\n\nHow many do you have?\n\n#cybersecurity #mobile #security"
+      }
+    },
+    {
+      "id": 7,
+      "day": 13,
+      "type": "educativo",
+      "platforms": ["twitter", "linkedin"],
+      "es": {
+        "text": "¿Sabías que tu email probablemente está en venta en la dark web por menos de $1?\n\nAsí funciona el mercado de datos robados:\n\n• Email + password: $1-5\n• Datos de tarjeta de crédito: $5-20\n• Identidad completa (fullz): $20-100\n• Acceso a cuenta bancaria: $100-1000\n\nLa mejor defensa: passwords únicos + 2FA en todo.\n\n#darkweb #ciberseguridad #datos"
+      },
+      "en": {
+        "text": "Did you know your email is probably for sale on the dark web for less than $1?\n\nHere's how the stolen data market works:\n\n• Email + password: $1-5\n• Credit card data: $5-20\n• Full identity (fullz): $20-100\n• Bank account access: $100-1000\n\nBest defense: unique passwords + 2FA on everything.\n\n#darkweb #cybersecurity #data"
+      }
+    },
+    {
+      "id": 8,
+      "day": 15,
+      "type": "tips",
+      "platforms": ["twitter", "linkedin"],
+      "es": {
+        "text": "3 señales de que tu cuenta fue hackeada:\n\n🔴 Emails de \"cambio de password\" que no pediste\n🔴 Sesiones activas en dispositivos que no reconocés\n🔴 Amigos reciben mensajes tuyos que no enviaste\n\nQué hacer AHORA:\n1. Cambiá el password inmediatamente\n2. Activá 2FA\n3. Revisá sesiones activas y cerrá las desconocidas\n4. Escaneá tu email en FK94 Security\n\n#hacked #ciberseguridad #seguridad"
+      },
+      "en": {
+        "text": "3 signs your account was hacked:\n\n🔴 \"Password change\" emails you didn't request\n🔴 Active sessions on devices you don't recognize\n🔴 Friends receiving messages from you that you didn't send\n\nWhat to do NOW:\n1. Change the password immediately\n2. Enable 2FA\n3. Review active sessions and close unknown ones\n4. Scan your email at FK94 Security\n\n#hacked #cybersecurity #security"
+      }
+    },
+    {
+      "id": 9,
+      "day": 17,
+      "type": "producto",
+      "platforms": ["twitter", "linkedin"],
+      "es": {
+        "text": "¿Qué pasa cuando escaneás tu email en FK94 Security?\n\n1️⃣ Buscamos en bases de datos filtradas\n2️⃣ Detectamos passwords expuestos\n3️⃣ Analizamos tu presencia en 300+ plataformas\n4️⃣ Evaluamos tu score de seguridad\n5️⃣ Te damos un plan de acción personalizado\n\nTodo en menos de 60 segundos.\n\nProbalo gratis → fk94security.com\n\n#ciberseguridad #OSINT #startup"
+      },
+      "en": {
+        "text": "What happens when you scan your email at FK94 Security?\n\n1️⃣ We search leaked databases\n2️⃣ We detect exposed passwords\n3️⃣ We analyze your presence on 300+ platforms\n4️⃣ We evaluate your security score\n5️⃣ We give you a personalized action plan\n\nAll in under 60 seconds.\n\nTry it free → fk94security.com\n\n#cybersecurity #OSINT #startup"
+      }
+    },
+    {
+      "id": 10,
+      "day": 19,
+      "type": "educativo",
+      "platforms": ["twitter", "linkedin"],
+      "es": {
+        "text": "SIM Swapping: el ataque que puede vaciarte la cuenta del banco.\n\nCómo funciona:\n1. El atacante recopila tus datos personales (OSINT)\n2. Llama a tu operador haciéndose pasar por vos\n3. Transfiere tu número a una SIM nueva\n4. Recibe tus códigos 2FA por SMS\n5. Accede a tu banco, email, crypto\n\nDefensa: NUNCA uses SMS como 2FA. Usá apps como Authy o hardware keys.\n\n#simswap #ciberseguridad #2FA"
+      },
+      "en": {
+        "text": "SIM Swapping: the attack that can drain your bank account.\n\nHow it works:\n1. Attacker collects your personal data (OSINT)\n2. Calls your carrier pretending to be you\n3. Transfers your number to a new SIM\n4. Receives your 2FA codes via SMS\n5. Accesses your bank, email, crypto\n\nDefense: NEVER use SMS for 2FA. Use apps like Authy or hardware keys.\n\n#simswap #cybersecurity #2FA"
+      }
+    },
+    {
+      "id": 11,
+      "day": 21,
+      "type": "tips",
+      "platforms": ["twitter", "linkedin"],
+      "es": {
+        "text": "Tu navegador sabe más de vos que tu mejor amigo.\n\nRevisá esto AHORA:\n\n🔍 Chrome → chrome://settings/passwords\n   (¿Cuántos passwords guardados tenés?)\n\n🔍 Chrome → chrome://settings/addresses\n   (¿Tu dirección está guardada?)\n\n🔍 Chrome → chrome://history\n   (¿Cuántos años de historial?)\n\nConsejo: usá un navegador enfocado en privacidad como Brave o Firefox.\n\n#privacidad #browser #seguridad"
+      },
+      "en": {
+        "text": "Your browser knows more about you than your best friend.\n\nCheck this NOW:\n\n🔍 Chrome → chrome://settings/passwords\n   (How many saved passwords?)\n\n🔍 Chrome → chrome://settings/addresses\n   (Is your address saved?)\n\n🔍 Chrome → chrome://history\n   (How many years of history?)\n\nTip: use a privacy-focused browser like Brave or Firefox.\n\n#privacy #browser #security"
+      }
+    },
+    {
+      "id": 12,
+      "day": 23,
+      "type": "dato_impactante",
+      "platforms": ["twitter", "linkedin"],
+      "es": {
+        "text": "Las empresas que más datos tienen sobre vos:\n\n📊 Google: ~5GB de datos por usuario\n📊 Facebook: ~3GB de datos por usuario\n📊 Amazon: historial de compras + Alexa recordings\n📊 Tu ISP: todo tu tráfico de internet\n\nPodés pedir una copia de tus datos:\n• Google: takeout.google.com\n• Facebook: facebook.com/dyi\n• Amazon: amazon.com/gp/privacycentral\n\nTe vas a sorprender.\n\n#privacidad #datos #bigtech"
+      },
+      "en": {
+        "text": "Companies that have the most data about you:\n\n📊 Google: ~5GB of data per user\n📊 Facebook: ~3GB of data per user\n📊 Amazon: purchase history + Alexa recordings\n📊 Your ISP: all your internet traffic\n\nYou can request a copy of your data:\n• Google: takeout.google.com\n• Facebook: facebook.com/dyi\n• Amazon: amazon.com/gp/privacycentral\n\nYou'll be surprised.\n\n#privacy #data #bigtech"
+      }
+    },
+    {
+      "id": 13,
+      "day": 25,
+      "type": "historia",
+      "platforms": ["twitter", "linkedin"],
+      "es": {
+        "text": "Historia real: una empresa perdió $4.7 millones por un email de phishing.\n\nEl atacante:\n1. Investigó al CEO en LinkedIn\n2. Clonó su email con un dominio similar\n3. Le envió un email al CFO pidiendo una transferencia \"urgente\"\n4. El CFO transfirió sin verificar por teléfono\n\nLección: la ingeniería social es el vector de ataque #1.\nNingún firewall te protege de la confianza mal depositada.\n\n#phishing #socialengineering #ciberseguridad"
+      },
+      "en": {
+        "text": "True story: a company lost $4.7M from a phishing email.\n\nThe attacker:\n1. Researched the CEO on LinkedIn\n2. Cloned their email with a similar domain\n3. Sent the CFO an email requesting an \"urgent\" transfer\n4. The CFO transferred without phone verification\n\nLesson: social engineering is the #1 attack vector.\nNo firewall protects you from misplaced trust.\n\n#phishing #socialengineering #cybersecurity"
+      }
+    },
+    {
+      "id": 14,
+      "day": 27,
+      "type": "checklist",
+      "platforms": ["twitter", "linkedin"],
+      "es": {
+        "text": "Checklist OPSEC para freelancers y emprendedores:\n\n☐ Email separado para negocios\n☐ Dominio propio (no @gmail para clientes)\n☐ Password manager con bóveda separada\n☐ VPN para WiFi públicos\n☐ Contrato de NDA con clientes\n☐ Backup encriptado de proyectos\n☐ 2FA en todas las herramientas de trabajo\n☐ Seguro de responsabilidad cyber\n\nTu negocio depende de tu seguridad.\n\n#freelance #OPSEC #emprendedores"
+      },
+      "en": {
+        "text": "OPSEC checklist for freelancers and entrepreneurs:\n\n☐ Separate business email\n☐ Own domain (no @gmail for clients)\n☐ Password manager with separate vault\n☐ VPN for public WiFi\n☐ NDA contracts with clients\n☐ Encrypted project backups\n☐ 2FA on all work tools\n☐ Cyber liability insurance\n\nYour business depends on your security.\n\n#freelance #OPSEC #entrepreneurs"
+      }
+    },
+    {
+      "id": 15,
+      "day": 29,
+      "type": "producto",
+      "platforms": ["twitter", "linkedin"],
+      "es": {
+        "text": "Lanzamos FK94 Security porque creemos que todos merecen saber dónde están expuestos sus datos.\n\n🔒 Checklist OPSEC gratuito con 54 items\n🔒 Scripts de hardening para macOS, Windows y Linux\n🔒 Escaneo de email en bases de datos filtradas\n🔒 Análisis de huella digital\n🔒 Reportes PDF personalizados\n\nLa seguridad empieza por saber dónde estás parado.\n\nProbalo → fk94security.com\n\n#ciberseguridad #startup #launch"
+      },
+      "en": {
+        "text": "We launched FK94 Security because we believe everyone deserves to know where their data is exposed.\n\n🔒 Free OPSEC checklist with 54 items\n🔒 Hardening scripts for macOS, Windows, and Linux\n🔒 Email scanning across leaked databases\n🔒 Digital footprint analysis\n🔒 Personalized PDF reports\n\nSecurity starts with knowing where you stand.\n\nTry it → fk94security.com\n\n#cybersecurity #startup #launch"
+      }
+    },
+    {
+      "id": 16,
+      "day": 31,
+      "type": "educativo",
+      "platforms": ["twitter", "linkedin", "reddit"],
+      "es": {
+        "text": "¿Qué es OSINT y por qué debería importarte?\n\nOSINT = Open Source Intelligence\nEs toda la información sobre vos que está disponible públicamente.\n\nIncluye:\n• Registros de dominios (WHOIS)\n• Perfiles de redes sociales\n• Datos en bases filtradas\n• Registros públicos\n• Metadatos de archivos que subís\n\nLo que un atacante puede encontrar sobre vos, vos también podés verlo.\n\n#OSINT #ciberseguridad #privacidad"
+      },
+      "en": {
+        "text": "What is OSINT and why should you care?\n\nOSINT = Open Source Intelligence\nIt's all publicly available information about you.\n\nIncludes:\n• Domain registrations (WHOIS)\n• Social media profiles\n• Data in leaked databases\n• Public records\n• Metadata from files you upload\n\nWhat an attacker can find about you, you can see too.\n\n#OSINT #cybersecurity #privacy"
+      }
+    },
+    {
+      "id": 17,
+      "day": 33,
+      "type": "tips",
+      "platforms": ["twitter", "linkedin"],
+      "es": {
+        "text": "Cómo revisar tu huella digital en 10 minutos:\n\n1. Googleá tu nombre completo entre comillas\n2. Googleá tu email principal\n3. Googleá tu número de teléfono\n4. Chequeá haveibeenpwned.com\n5. Revisá la configuración de privacidad de Google, Facebook e Instagram\n\nLo que encontrés, un atacante también lo puede encontrar.\n\n#privacidad #huelladigital #OSINT"
+      },
+      "en": {
+        "text": "How to check your digital footprint in 10 minutes:\n\n1. Google your full name in quotes\n2. Google your main email\n3. Google your phone number\n4. Check haveibeenpwned.com\n5. Review privacy settings on Google, Facebook, and Instagram\n\nWhat you find, an attacker can find too.\n\n#privacy #digitalfootprint #OSINT"
+      }
+    },
+    {
+      "id": 18,
+      "day": 35,
+      "type": "dato_impactante",
+      "platforms": ["twitter", "linkedin"],
+      "es": {
+        "text": "El costo promedio de un breach de datos para una empresa en 2024: $4.88 millones de dólares.\n\nPero para una persona individual el costo puede ser:\n• Horas perdidas cambiando passwords\n• Dinero robado de cuentas bancarias\n• Identidad usada para fraudes\n• Estrés y ansiedad\n\nLa prevención siempre es más barata que la recuperación.\n\n#databreach #ciberseguridad #costos"
+      },
+      "en": {
+        "text": "Average cost of a data breach for a company in 2024: $4.88 million.\n\nBut for an individual, the cost can be:\n• Hours lost changing passwords\n• Money stolen from bank accounts\n• Identity used for fraud\n• Stress and anxiety\n\nPrevention is always cheaper than recovery.\n\n#databreach #cybersecurity #costs"
+      }
+    },
+    {
+      "id": 19,
+      "day": 37,
+      "type": "tips",
+      "platforms": ["twitter", "linkedin"],
+      "es": {
+        "text": "Password managers: la herramienta #1 que todos deberían usar.\n\nMis recomendaciones (todas tienen versión gratis):\n\n🔑 Bitwarden - Open source, gratis, excelente\n🔑 KeePassXC - Local, sin cloud, máxima paranoia\n🔑 1Password - El más pulido (no gratis pero vale)\n\nRegla: si podés recordar tu password, probablemente es débil.\n\n#passwords #seguridad #herramientas"
+      },
+      "en": {
+        "text": "Password managers: the #1 tool everyone should use.\n\nMy recommendations (all have free tiers):\n\n🔑 Bitwarden - Open source, free, excellent\n🔑 KeePassXC - Local, no cloud, maximum paranoia\n🔑 1Password - Most polished (not free but worth it)\n\nRule: if you can remember your password, it's probably weak.\n\n#passwords #security #tools"
+      }
+    },
+    {
+      "id": 20,
+      "day": 39,
+      "type": "educativo",
+      "platforms": ["twitter", "linkedin", "reddit"],
+      "es": {
+        "text": "Tipos de autenticación de 2 factores, de peor a mejor:\n\n❌ SMS - Vulnerable a SIM swap\n⚠️ Email - Mejor que nada, pero si hackean tu email...\n✅ App (Authy, Google Auth) - Sólido y gratis\n✅✅ Hardware key (YubiKey) - Prácticamente inhackeable\n✅✅✅ Passkeys - El futuro de la autenticación\n\nMínimo: usá una app. Ideal: hardware key para lo importante.\n\n#2FA #seguridad #autenticación"
+      },
+      "en": {
+        "text": "Types of 2FA, from worst to best:\n\n❌ SMS - Vulnerable to SIM swap\n⚠️ Email - Better than nothing, but if your email is hacked...\n✅ App (Authy, Google Auth) - Solid and free\n✅✅ Hardware key (YubiKey) - Practically unhackable\n✅✅✅ Passkeys - The future of authentication\n\nMinimum: use an app. Ideal: hardware key for important accounts.\n\n#2FA #security #authentication"
+      }
+    },
+    {
+      "id": 21,
+      "day": 41,
+      "type": "historia",
+      "platforms": ["twitter", "linkedin"],
+      "es": {
+        "text": "En 2023, un hacker de 17 años accedió a los sistemas internos de Uber.\n\n¿Cómo? Ingeniería social pura.\n\n1. Encontró un empleado en LinkedIn\n2. Le mandó mensajes haciéndose pasar por IT\n3. El empleado le dio acceso a la VPN\n4. Desde ahí, accedió a TODO\n\nUber tiene millones en seguridad. Un adolescente los pasó con un mensaje.\n\nLa seguridad humana > la seguridad técnica.\n\n#uber #socialengineering #infosec"
+      },
+      "en": {
+        "text": "In 2023, a 17-year-old hacker accessed Uber's internal systems.\n\nHow? Pure social engineering.\n\n1. Found an employee on LinkedIn\n2. Sent messages pretending to be IT\n3. The employee gave VPN access\n4. From there, accessed EVERYTHING\n\nUber spends millions on security. A teenager bypassed it with a message.\n\nHuman security > technical security.\n\n#uber #socialengineering #infosec"
+      }
+    },
+    {
+      "id": 22,
+      "day": 43,
+      "type": "checklist",
+      "platforms": ["twitter", "linkedin"],
+      "es": {
+        "text": "Checklist de seguridad para tu laptop:\n\n☐ Disco encriptado (FileVault/BitLocker)\n☐ Firewall activado\n☐ Actualizaciones automáticas\n☐ Antivirus actualizado\n☐ Password de login fuerte\n☐ Bloqueo automático al alejarte\n☐ Backup regular (3-2-1 rule)\n☐ VPN para WiFi público\n\nTu laptop tiene toda tu vida digital. Protegela.\n\n#laptop #seguridad #checklist"
+      },
+      "en": {
+        "text": "Security checklist for your laptop:\n\n☐ Encrypted disk (FileVault/BitLocker)\n☐ Firewall enabled\n☐ Automatic updates\n☐ Updated antivirus\n☐ Strong login password\n☐ Auto-lock when you walk away\n☐ Regular backup (3-2-1 rule)\n☐ VPN for public WiFi\n\nYour laptop holds your entire digital life. Protect it.\n\n#laptop #security #checklist"
+      }
+    },
+    {
+      "id": 23,
+      "day": 45,
+      "type": "producto",
+      "platforms": ["twitter", "linkedin"],
+      "es": {
+        "text": "¿Por qué creamos FK94 Security?\n\nPorque vimos que la mayoría de las personas no saben:\n- Si sus passwords están filtrados\n- En cuántos breaches aparece su email\n- Quién tiene acceso a su información\n- Qué datos suyos son públicos\n\nDecidimos hacer una herramienta que lo muestre todo, simple y claro.\n\nSin jerga técnica. Sin complicaciones.\n\n→ fk94security.com\n\n#ciberseguridad #startup"
+      },
+      "en": {
+        "text": "Why we built FK94 Security?\n\nBecause we saw most people don't know:\n- If their passwords are leaked\n- How many breaches their email is in\n- Who has access to their information\n- What data about them is public\n\nWe decided to build a tool that shows everything, simple and clear.\n\nNo technical jargon. No complications.\n\n→ fk94security.com\n\n#cybersecurity #startup"
+      }
+    },
+    {
+      "id": 24,
+      "day": 47,
+      "type": "educativo",
+      "platforms": ["twitter", "linkedin"],
+      "es": {
+        "text": "Phishing moderno: ya no es solo emails de \"príncipes nigerianos\".\n\nHoy los ataques usan:\n• AI para escribir emails perfectos\n• Dominios idénticos al real (goog1e.com)\n• Clonación de páginas de login\n• Mensajes de WhatsApp/Telegram\n• Incluso llamadas con voz clonada por AI\n\nRegla: si no lo esperabas, verificalo por otro canal.\n\n#phishing #AI #ciberseguridad"
+      },
+      "en": {
+        "text": "Modern phishing: it's not just \"Nigerian prince\" emails anymore.\n\nToday's attacks use:\n• AI to write perfect emails\n• Domains identical to real ones (goog1e.com)\n• Login page cloning\n• WhatsApp/Telegram messages\n• Even AI-cloned voice calls\n\nRule: if you didn't expect it, verify through another channel.\n\n#phishing #AI #cybersecurity"
+      }
+    },
+    {
+      "id": 25,
+      "day": 49,
+      "type": "tips",
+      "platforms": ["twitter", "linkedin"],
+      "es": {
+        "text": "Tu WiFi de casa puede ser una puerta abierta.\n\n5 cosas para asegurar tu router:\n\n1. Cambiá el password default del admin panel\n2. Usá WPA3 (o mínimo WPA2)\n3. Desactivá WPS\n4. Actualizá el firmware\n5. Cambiá el nombre de la red (no uses tu nombre/dirección)\n\nBonus: creá una red guest para visitas.\n\n#wifi #router #seguridadenelhogar"
+      },
+      "en": {
+        "text": "Your home WiFi can be an open door.\n\n5 things to secure your router:\n\n1. Change the default admin password\n2. Use WPA3 (or minimum WPA2)\n3. Disable WPS\n4. Update firmware\n5. Change network name (don't use your name/address)\n\nBonus: create a guest network for visitors.\n\n#wifi #router #homesecurity"
+      }
+    },
+    {
+      "id": 26,
+      "day": 51,
+      "type": "dato_impactante",
+      "platforms": ["twitter", "linkedin"],
+      "es": {
+        "text": "El 95% de los ciberataques exitosos empiezan con un error humano.\n\nNo es un bug en el código.\nNo es una vulnerabilidad zero-day.\nEs alguien que hizo click donde no debía.\n\nLa tecnología puede ser perfecta.\nSi el humano falla, todo falla.\n\nPor eso la concientización es la mejor inversión en seguridad.\n\n#awareness #ciberseguridad #humanfactor"
+      },
+      "en": {
+        "text": "95% of successful cyberattacks start with a human error.\n\nNot a code bug.\nNot a zero-day vulnerability.\nSomeone clicked where they shouldn't have.\n\nTechnology can be perfect.\nIf the human fails, everything fails.\n\nThat's why awareness is the best investment in security.\n\n#awareness #cybersecurity #humanfactor"
+      }
+    },
+    {
+      "id": 27,
+      "day": 53,
+      "type": "educativo",
+      "platforms": ["twitter", "linkedin", "reddit"],
+      "es": {
+        "text": "VPN: qué hace y qué NO hace.\n\n✅ Lo que hace:\n• Encripta tu tráfico en WiFi públicos\n• Oculta tu IP del sitio que visitás\n• Bypasea bloqueos geográficos\n\n❌ Lo que NO hace:\n• No te hace anónimo\n• No te protege de malware\n• No evita phishing\n• No impide que Google te trackee si estás logueado\n\nVPN es una herramienta, no una solución mágica.\n\n#VPN #privacidad #mitos"
+      },
+      "en": {
+        "text": "VPN: what it does and what it DOESN'T.\n\n✅ What it does:\n• Encrypts your traffic on public WiFi\n• Hides your IP from visited sites\n• Bypasses geo-blocks\n\n❌ What it DOESN'T:\n• Doesn't make you anonymous\n• Doesn't protect from malware\n• Doesn't prevent phishing\n• Doesn't stop Google tracking if you're logged in\n\nVPN is a tool, not a magic solution.\n\n#VPN #privacy #myths"
+      }
+    },
+    {
+      "id": 28,
+      "day": 55,
+      "type": "tips",
+      "platforms": ["twitter", "linkedin"],
+      "es": {
+        "text": "Email aliases: la herramienta subestimada de privacidad.\n\nEn vez de dar tu email real a cada servicio, usá aliases:\n\n📧 SimpleLogin (open source, gratis)\n📧 Firefox Relay (de Mozilla)\n📧 Apple Hide My Email (si usás Apple)\n\nBeneficio: si un servicio filtra tu email, solo se filtra el alias. Lo desactivás y listo.\n\n#email #privacidad #aliases"
+      },
+      "en": {
+        "text": "Email aliases: the underrated privacy tool.\n\nInstead of giving your real email to every service, use aliases:\n\n📧 SimpleLogin (open source, free)\n📧 Firefox Relay (by Mozilla)\n📧 Apple Hide My Email (if on Apple)\n\nBenefit: if a service leaks your email, only the alias is leaked. Disable it and you're done.\n\n#email #privacy #aliases"
+      }
+    },
+    {
+      "id": 29,
+      "day": 57,
+      "type": "historia",
+      "platforms": ["twitter", "linkedin"],
+      "es": {
+        "text": "La historia de cómo una contraseña filtrada llevó a un robo de $600,000 en crypto.\n\nEl usuario:\n1. Usaba el mismo password en Gmail y en un exchange\n2. Su email apareció en el breach de LinkedIn 2012\n3. Un atacante probó ese password en el exchange\n4. Funcionó. No tenía 2FA.\n5. Todo su portfolio fue transferido en minutos.\n\nLección: password único + 2FA = no negociable.\n\n#crypto #seguridad #breach"
+      },
+      "en": {
+        "text": "How a leaked password led to a $600K crypto theft.\n\nThe user:\n1. Used the same password for Gmail and a crypto exchange\n2. Their email appeared in the 2012 LinkedIn breach\n3. An attacker tried that password on the exchange\n4. It worked. No 2FA enabled.\n5. Their entire portfolio was transferred in minutes.\n\nLesson: unique password + 2FA = non-negotiable.\n\n#crypto #security #breach"
+      }
+    },
+    {
+      "id": 30,
+      "day": 59,
+      "type": "checklist",
+      "platforms": ["twitter", "linkedin"],
+      "es": {
+        "text": "Checklist post-breach (si tu email aparece en un breach):\n\n☐ Cambiá el password del servicio afectado AHORA\n☐ Cambiá el password en cualquier otro sitio donde uses el mismo\n☐ Activá 2FA donde no lo tengas\n☐ Revisá actividad reciente en tus cuentas\n☐ Configurá alertas de login\n☐ Si hay datos financieros: alertá a tu banco\n☐ Monitoreá tus cuentas por 30 días\n\n#breach #respuesta #seguridad"
+      },
+      "en": {
+        "text": "Post-breach checklist (if your email appears in a breach):\n\n☐ Change the affected service password NOW\n☐ Change it anywhere else you reused it\n☐ Enable 2FA where you haven't\n☐ Review recent account activity\n☐ Set up login alerts\n☐ If financial data: alert your bank\n☐ Monitor accounts for 30 days\n\n#breach #response #security"
+      }
+    },
+    {
+      "id": 31,
+      "day": 61,
+      "type": "educativo",
+      "platforms": ["twitter", "linkedin"],
+      "es": {
+        "text": "Metadata: la información oculta en todo lo que compartís.\n\nUna foto que subís puede contener:\n📍 Ubicación GPS exacta\n📱 Modelo de celular\n🕐 Fecha y hora exacta\n📸 Configuración de la cámara\n\nUn documento de Word puede tener:\n👤 Tu nombre completo\n💼 Tu organización\n📅 Historial de ediciones\n\nConsejo: limpiá los metadatos antes de compartir archivos.\n\n#metadata #OSINT #privacidad"
+      },
+      "en": {
+        "text": "Metadata: the hidden info in everything you share.\n\nA photo you upload may contain:\n📍 Exact GPS location\n📱 Phone model\n🕐 Exact date and time\n📸 Camera settings\n\nA Word document may have:\n👤 Your full name\n💼 Your organization\n📅 Edit history\n\nTip: strip metadata before sharing files.\n\n#metadata #OSINT #privacy"
+      }
+    },
+    {
+      "id": 32,
+      "day": 63,
+      "type": "tips",
+      "platforms": ["twitter", "linkedin"],
+      "es": {
+        "text": "Cómo detectar un sitio de phishing:\n\n1. Revisá el dominio COMPLETO (paypa1.com ≠ paypal.com)\n2. Buscá el candadito HTTPS (no garantiza seguridad, pero su ausencia es red flag)\n3. Verificá errores de ortografía\n4. ¿Te pide urgencia? Señal de alarma.\n5. Hover sobre links antes de clickear\n\nAnte la duda: andá directo al sitio tipeando la URL, no desde el link.\n\n#phishing #tips #seguridad"
+      },
+      "en": {
+        "text": "How to spot a phishing site:\n\n1. Check the FULL domain (paypa1.com ≠ paypal.com)\n2. Look for HTTPS (doesn't guarantee safety, but absence is a red flag)\n3. Check for spelling errors\n4. Creating urgency? Alarm signal.\n5. Hover over links before clicking\n\nWhen in doubt: go directly to the site by typing the URL, not from the link.\n\n#phishing #tips #security"
+      }
+    },
+    {
+      "id": 33,
+      "day": 65,
+      "type": "dato_impactante",
+      "platforms": ["twitter", "linkedin"],
+      "es": {
+        "text": "Ransomware en números (2024):\n\n💰 Pago promedio de rescate: $1.5 millones\n⏱️ Tiempo promedio de recuperación: 22 días\n🏥 Sector más atacado: salud\n📈 Aumento vs 2023: 74%\n🔓 % que paga y NO recupera datos: 20%\n\nEl mejor backup es el que nunca necesitaste usar.\nPero si lo necesitás, que esté offline y encriptado.\n\n#ransomware #backup #ciberseguridad"
+      },
+      "en": {
+        "text": "Ransomware in numbers (2024):\n\n💰 Average ransom payment: $1.5 million\n⏱️ Average recovery time: 22 days\n🏥 Most attacked sector: healthcare\n📈 Increase vs 2023: 74%\n🔓 % that pays and DOESN'T recover data: 20%\n\nThe best backup is one you never need to use.\nBut if you do, make sure it's offline and encrypted.\n\n#ransomware #backup #cybersecurity"
+      }
+    },
+    {
+      "id": 34,
+      "day": 67,
+      "type": "producto",
+      "platforms": ["twitter", "linkedin"],
+      "es": {
+        "text": "FK94 Security Score: sabé exactamente dónde estás parado.\n\nNuestro algoritmo analiza:\n\n🔍 Breaches donde aparece tu email\n🔑 Si tus passwords fueron filtrados\n🌐 Tu exposición OSINT\n📊 Tu configuración de seguridad\n\nResultado: un score de 0 a 100 con recomendaciones priorizadas.\n\nNo necesitás ser experto para estar seguro.\n\n→ fk94security.com\n\n#securityscore #ciberseguridad"
+      },
+      "en": {
+        "text": "FK94 Security Score: know exactly where you stand.\n\nOur algorithm analyzes:\n\n🔍 Breaches containing your email\n🔑 If your passwords were leaked\n🌐 Your OSINT exposure\n📊 Your security configuration\n\nResult: a 0-100 score with prioritized recommendations.\n\nYou don't need to be an expert to be secure.\n\n→ fk94security.com\n\n#securityscore #cybersecurity"
+      }
+    },
+    {
+      "id": 35,
+      "day": 69,
+      "type": "educativo",
+      "platforms": ["twitter", "linkedin"],
+      "es": {
+        "text": "Cookies de terceros: cómo te trackean por toda la web.\n\nCuando visitás un sitio con ads:\n1. El ad carga una cookie de la red publicitaria\n2. Esa cookie te identifica\n3. En el próximo sitio con la misma red, ya saben que sos vos\n4. Así construyen tu perfil: sitios visitados, intereses, compras\n\nSolución: bloqueá cookies de terceros en tu browser.\n\n#cookies #tracking #privacidad"
+      },
+      "en": {
+        "text": "Third-party cookies: how they track you across the web.\n\nWhen you visit a site with ads:\n1. The ad loads a cookie from the ad network\n2. That cookie identifies you\n3. On the next site with the same network, they know it's you\n4. They build your profile: sites visited, interests, purchases\n\nSolution: block third-party cookies in your browser.\n\n#cookies #tracking #privacy"
+      }
+    },
+    {
+      "id": 36,
+      "day": 71,
+      "type": "tips",
+      "platforms": ["twitter", "linkedin"],
+      "es": {
+        "text": "7 cosas que NO deberías compartir en redes sociales:\n\n1. Tu ubicación en tiempo real\n2. Fotos de tu documento/pasaporte\n3. Tu dirección exacta\n4. Fotos de boletos de avión (tienen tu PNR)\n5. Cuándo te vas de vacaciones\n6. Datos de tu auto (patente visible)\n7. Tu rutina diaria detallada\n\nTodo esto es OSINT gratuito para un atacante.\n\n#redessociales #OPSEC #privacidad"
+      },
+      "en": {
+        "text": "7 things you should NOT share on social media:\n\n1. Your real-time location\n2. Photos of your ID/passport\n3. Your exact address\n4. Photos of flight tickets (they have your PNR)\n5. When you're going on vacation\n6. Car details (visible license plate)\n7. Your detailed daily routine\n\nAll of this is free OSINT for an attacker.\n\n#socialmedia #OPSEC #privacy"
+      }
+    },
+    {
+      "id": 37,
+      "day": 73,
+      "type": "educativo",
+      "platforms": ["twitter", "linkedin", "reddit"],
+      "es": {
+        "text": "DNS: el eslabón olvidado de la privacidad.\n\nTu ISP puede ver CADA sitio que visitás porque resuelve tus DNS.\n\nSolución fácil:\n\n🔒 Cloudflare DNS: 1.1.1.1 (rápido, privado)\n🔒 Quad9: 9.9.9.9 (bloquea malware)\n🔒 NextDNS: configurable con ad blocking\n\nMejor aún: usá DNS over HTTPS (DoH) en tu browser.\n\nFirefox: Configuración → Privacidad → DNS over HTTPS\n\n#DNS #privacidad #networking"
+      },
+      "en": {
+        "text": "DNS: the forgotten link in privacy.\n\nYour ISP can see EVERY site you visit because it resolves your DNS.\n\nEasy fix:\n\n🔒 Cloudflare DNS: 1.1.1.1 (fast, private)\n🔒 Quad9: 9.9.9.9 (blocks malware)\n🔒 NextDNS: configurable with ad blocking\n\nEven better: use DNS over HTTPS (DoH) in your browser.\n\nFirefox: Settings → Privacy → DNS over HTTPS\n\n#DNS #privacy #networking"
+      }
+    },
+    {
+      "id": 38,
+      "day": 75,
+      "type": "historia",
+      "platforms": ["twitter", "linkedin"],
+      "es": {
+        "text": "Un periodista investigativo fue identificado y amenazado usando solo OSINT.\n\nEl atacante:\n1. Encontró su nombre en un artículo\n2. Buscó su email en LinkedIn\n3. El email estaba en 3 breaches con su dirección\n4. Cruzó datos con registros públicos\n5. Sabía su dirección, teléfono y rutina\n\nTodo sin hackear nada. Todo con información pública.\n\nLa privacidad no es paranoia. Es protección.\n\n#OSINT #periodismo #privacidad"
+      },
+      "en": {
+        "text": "An investigative journalist was identified and threatened using only OSINT.\n\nThe attacker:\n1. Found their name in an article\n2. Searched their email on LinkedIn\n3. The email was in 3 breaches with their address\n4. Cross-referenced with public records\n5. Knew their address, phone, and routine\n\nAll without hacking anything. All with public information.\n\nPrivacy isn't paranoia. It's protection.\n\n#OSINT #journalism #privacy"
+      }
+    },
+    {
+      "id": 39,
+      "day": 77,
+      "type": "checklist",
+      "platforms": ["twitter", "linkedin"],
+      "es": {
+        "text": "Checklist de seguridad para tus cuentas de crypto:\n\n☐ Hardware wallet para holdings grandes\n☐ 2FA con app (NUNCA SMS)\n☐ Email dedicado solo para exchanges\n☐ Password único por exchange\n☐ Whitelist de direcciones de retiro\n☐ Notificaciones de login activadas\n☐ Anti-phishing code configurado\n☐ Seed phrase guardada offline\n\nEn crypto, vos sos tu propio banco.\n\n#crypto #seguridad #bitcoin"
+      },
+      "en": {
+        "text": "Security checklist for your crypto accounts:\n\n☐ Hardware wallet for large holdings\n☐ App-based 2FA (NEVER SMS)\n☐ Dedicated email for exchanges only\n☐ Unique password per exchange\n☐ Withdrawal address whitelist\n☐ Login notifications enabled\n☐ Anti-phishing code configured\n☐ Seed phrase stored offline\n\nIn crypto, you are your own bank.\n\n#crypto #security #bitcoin"
+      }
+    },
+    {
+      "id": 40,
+      "day": 79,
+      "type": "tips",
+      "platforms": ["twitter", "linkedin"],
+      "es": {
+        "text": "Backup 3-2-1: la regla de oro.\n\n3 copias de tus datos\n2 tipos de almacenamiento diferentes\n1 copia offsite (fuera de tu casa)\n\nEjemplo práctico:\n💻 Disco principal (copia 1)\n🔒 Disco externo encriptado (copia 2)\n☁️ Cloud encriptado como Cryptomator + Google Drive (copia 3)\n\nSi te roban, te hackean, o se rompe algo: siempre tenés respaldo.\n\n#backup #datos #seguridad"
+      },
+      "en": {
+        "text": "Backup 3-2-1: the golden rule.\n\n3 copies of your data\n2 different storage types\n1 copy offsite (outside your home)\n\nPractical example:\n💻 Main drive (copy 1)\n🔒 Encrypted external drive (copy 2)\n☁️ Encrypted cloud like Cryptomator + Google Drive (copy 3)\n\nIf stolen, hacked, or broken: you always have a backup.\n\n#backup #data #security"
+      }
+    },
+    {
+      "id": 41,
+      "day": 81,
+      "type": "educativo",
+      "platforms": ["twitter", "linkedin"],
+      "es": {
+        "text": "Deepfakes: la nueva frontera del fraude.\n\nYa se pueden crear:\n🎙️ Clones de voz con 3 segundos de audio\n🎥 Videos falsos indistinguibles del real\n📞 Llamadas falsas imitando a tu jefe/familiar\n\nCómo protegerte:\n• Establecé una palabra clave con familia para verificar identidad\n• No confíes en llamadas inesperadas de \"urgencia\"\n• Verificá por otro canal\n\n#deepfake #AI #fraude"
+      },
+      "en": {
+        "text": "Deepfakes: the new frontier of fraud.\n\nNow possible to create:\n🎙️ Voice clones from 3 seconds of audio\n🎥 Fake videos indistinguishable from real\n📞 Fake calls impersonating your boss/family\n\nHow to protect yourself:\n• Set up a code word with family to verify identity\n• Don't trust unexpected \"urgent\" calls\n• Verify through another channel\n\n#deepfake #AI #fraud"
+      }
+    },
+    {
+      "id": 42,
+      "day": 83,
+      "type": "producto",
+      "platforms": ["twitter", "linkedin"],
+      "es": {
+        "text": "Scripts de hardening gratis en FK94 Security.\n\nEndurece tu sistema en minutos:\n\n🖥️ macOS: firewall, FileVault, permisos, Gatekeeper\n🪟 Windows: BitLocker, Defender, UAC, telemetría\n🐧 Linux: SSH, UFW, fail2ban, actualizaciones\n\nCada script explicado paso a paso.\nSin conocimiento técnico requerido.\n\n→ fk94security.com/harden\n\n#hardening #seguridad #scripts"
+      },
+      "en": {
+        "text": "Free hardening scripts at FK94 Security.\n\nHarden your system in minutes:\n\n🖥️ macOS: firewall, FileVault, permissions, Gatekeeper\n🪟 Windows: BitLocker, Defender, UAC, telemetry\n🐧 Linux: SSH, UFW, fail2ban, updates\n\nEach script explained step by step.\nNo technical knowledge required.\n\n→ fk94security.com/harden\n\n#hardening #security #scripts"
+      }
+    },
+    {
+      "id": 43,
+      "day": 85,
+      "type": "dato_impactante",
+      "platforms": ["twitter", "linkedin"],
+      "es": {
+        "text": "Tu cara es un dato biométrico. Y ya está en bases de datos.\n\n🤳 Cada foto que subís a redes es procesada por reconocimiento facial\n🏪 Cámaras en tiendas ya usan reconocimiento facial\n🌐 Clearview AI tiene 30+ mil millones de fotos scrapeadas\n\nA diferencia de un password, tu cara no se puede cambiar.\n\nPensalo antes de subir esa selfie.\n\n#biometrics #reconocimientofacial #privacidad"
+      },
+      "en": {
+        "text": "Your face is biometric data. And it's already in databases.\n\n🤳 Every photo you upload to social media is processed by facial recognition\n🏪 Store cameras already use facial recognition\n🌐 Clearview AI has 30+ billion scraped photos\n\nUnlike a password, you can't change your face.\n\nThink before uploading that selfie.\n\n#biometrics #facialrecognition #privacy"
+      }
+    },
+    {
+      "id": 44,
+      "day": 87,
+      "type": "tips",
+      "platforms": ["twitter", "linkedin"],
+      "es": {
+        "text": "Seguridad en WhatsApp - lo que pocos saben:\n\n1. Activá verificación en 2 pasos (Ajustes → Cuenta → Verificación)\n2. Ocultá tu \"última vez\" y foto de perfil a desconocidos\n3. Desactivá descarga automática de medios\n4. Revisá dispositivos vinculados regularmente\n5. No hagas click en links de grupos que no conocés\n6. Activá bloqueo con huella/Face ID\n\n#WhatsApp #seguridad #mensajería"
+      },
+      "en": {
+        "text": "WhatsApp security - what most people don't know:\n\n1. Enable 2-step verification (Settings → Account → Verification)\n2. Hide \"last seen\" and profile photo from non-contacts\n3. Disable automatic media download\n4. Review linked devices regularly\n5. Don't click links in unknown groups\n6. Enable fingerprint/Face ID lock\n\n#WhatsApp #security #messaging"
+      }
+    },
+    {
+      "id": 45,
+      "day": 89,
+      "type": "educativo",
+      "platforms": ["twitter", "linkedin", "reddit"],
+      "es": {
+        "text": "Zero Trust: el principio de seguridad más importante.\n\n\"Nunca confíes, siempre verificá.\"\n\nSignifica:\n• No confiar en ningún usuario/dispositivo por defecto\n• Verificar cada acceso, cada vez\n• Mínimo privilegio: solo acceso a lo necesario\n• Asumir que la red ya está comprometida\n\nAplicalo a tu vida personal:\n• No confíes en emails solo porque parecen legítimos\n• Verificá identidades por múltiples canales\n\n#zerotrust #seguridad #principios"
+      },
+      "en": {
+        "text": "Zero Trust: the most important security principle.\n\n\"Never trust, always verify.\"\n\nMeans:\n• Don't trust any user/device by default\n• Verify every access, every time\n• Least privilege: only access what's needed\n• Assume the network is already compromised\n\nApply to personal life:\n• Don't trust emails just because they look legit\n• Verify identities through multiple channels\n\n#zerotrust #security #principles"
+      }
+    },
+    {
+      "id": 46,
+      "day": 91,
+      "type": "historia",
+      "platforms": ["twitter", "linkedin"],
+      "es": {
+        "text": "Cómo un data broker vendió la ubicación de un sacerdote, revelando su orientación sexual.\n\nEn 2021, datos de Grindr fueron comprados de un broker.\nCruzaron la data con registros públicos.\nIdentificaron al sacerdote y publicaron la historia.\n\nÉl no fue \"hackeado\". Solo usó una app que vendió sus datos.\n\nTus apps saben más de vos de lo que pensás. Revisá sus permisos.\n\n#databrokers #privacidad #datos"
+      },
+      "en": {
+        "text": "How a data broker sold a priest's location data, revealing his sexual orientation.\n\nIn 2021, Grindr data was purchased from a broker.\nThey cross-referenced with public records.\nIdentified the priest and published the story.\n\nHe wasn't \"hacked.\" He just used an app that sold his data.\n\nYour apps know more about you than you think. Review their permissions.\n\n#databrokers #privacy #data"
+      }
+    },
+    {
+      "id": 47,
+      "day": 93,
+      "type": "checklist",
+      "platforms": ["twitter", "linkedin"],
+      "es": {
+        "text": "Checklist de seguridad para padres (proteger a tus hijos online):\n\n☐ Configurar control parental en dispositivos\n☐ Hablar sobre no compartir info personal\n☐ Revisar lista de amigos en redes\n☐ Configurar privacidad en sus cuentas\n☐ Enseñar a reconocer mensajes sospechosos\n☐ Establecer reglas de tiempo de pantalla\n☐ Mantener dispositivos actualizados\n☐ Saber qué apps usan\n\n#padres #seguridadinfantil #online"
+      },
+      "en": {
+        "text": "Security checklist for parents (protecting kids online):\n\n☐ Set up parental controls on devices\n☐ Talk about not sharing personal info\n☐ Review friends lists on social media\n☐ Configure privacy on their accounts\n☐ Teach them to recognize suspicious messages\n☐ Set screen time rules\n☐ Keep devices updated\n☐ Know what apps they use\n\n#parents #childsafety #online"
+      }
+    },
+    {
+      "id": 48,
+      "day": 95,
+      "type": "tips",
+      "platforms": ["twitter", "linkedin"],
+      "es": {
+        "text": "Cómo configurar un email seguro en 5 minutos:\n\n1. Creá una cuenta en ProtonMail o Tutanota (gratis, encriptado)\n2. Usalo para cuentas importantes (banco, inversiones)\n3. Activá 2FA con app\n4. Configurá recovery con otro email seguro\n5. Nunca lo uses para suscripciones random\n\nSepará lo importante de lo descartable.\n\n#email #protonmail #seguridad"
+      },
+      "en": {
+        "text": "How to set up a secure email in 5 minutes:\n\n1. Create a ProtonMail or Tutanota account (free, encrypted)\n2. Use it for important accounts (bank, investments)\n3. Enable app-based 2FA\n4. Set recovery with another secure email\n5. Never use it for random signups\n\nSeparate what's important from what's disposable.\n\n#email #protonmail #security"
+      }
+    },
+    {
+      "id": 49,
+      "day": 97,
+      "type": "producto",
+      "platforms": ["twitter", "linkedin"],
+      "es": {
+        "text": "FK94 Security: tu auditoría de seguridad personal en 60 segundos.\n\n¿Qué obtenés?\n\n📊 Security Score (0-100)\n🔍 Breaches donde aparece tu email\n🔑 Estado de tus passwords\n🌐 Tu huella digital OSINT\n📋 Plan de acción personalizado\n📄 Reporte PDF descargable\n\nGratis para empezar. Pro para protección completa.\n\n→ fk94security.com\n\n#ciberseguridad #herramientas #protección"
+      },
+      "en": {
+        "text": "FK94 Security: your personal security audit in 60 seconds.\n\nWhat you get:\n\n📊 Security Score (0-100)\n🔍 Breaches containing your email\n🔑 Password exposure status\n🌐 Your OSINT digital footprint\n📋 Personalized action plan\n📄 Downloadable PDF report\n\nFree to start. Pro for full protection.\n\n→ fk94security.com\n\n#cybersecurity #tools #protection"
+      }
+    },
+    {
+      "id": 50,
+      "day": 99,
+      "type": "educativo",
+      "platforms": ["twitter", "linkedin", "reddit"],
+      "es": {
+        "text": "Supply chain attacks: cuando el software \"seguro\" viene comprometido.\n\nEjemplos reales:\n• SolarWinds (2020): 18,000 organizaciones comprometidas\n• Codecov (2021): variables de entorno robadas de CIs\n• ua-parser-js (2021): npm package con malware\n\nCómo protegerte:\n• Verificá dependencias de tu software\n• Usá lock files (package-lock.json, etc)\n• Monitoreá actualizaciones sospechosas\n• Aplicá el principio de mínimo privilegio\n\n#supplychain #ciberseguridad #desarrollo"
+      },
+      "en": {
+        "text": "Supply chain attacks: when \"secure\" software comes compromised.\n\nReal examples:\n• SolarWinds (2020): 18,000 orgs compromised\n• Codecov (2021): CI env variables stolen\n• ua-parser-js (2021): npm package with malware\n\nHow to protect yourself:\n• Verify software dependencies\n• Use lock files (package-lock.json, etc)\n• Monitor suspicious updates\n• Apply least privilege principle\n\n#supplychain #cybersecurity #development"
+      }
+    },
+    {
+      "id": 51,
+      "day": 101,
+      "type": "dato_impactante",
+      "platforms": ["twitter", "linkedin"],
+      "es": {
+        "text": "Cada minuto en internet (2024):\n\n📧 231 millones de emails enviados\n🔍 6.3 millones de búsquedas en Google\n📱 500 horas de video subidas a YouTube\n💬 66,000 mensajes en WhatsApp\n🛒 $440,000 gastados en compras online\n🔓 200+ intentos de phishing\n\nEn ese mismo minuto, tus datos están siendo recolectados, analizados y vendidos.\n\n#internet #datos #escala"
+      },
+      "en": {
+        "text": "Every minute on the internet (2024):\n\n📧 231 million emails sent\n🔍 6.3 million Google searches\n📱 500 hours of YouTube video uploaded\n💬 66,000 WhatsApp messages\n🛒 $440,000 spent in online shopping\n🔓 200+ phishing attempts\n\nIn that same minute, your data is being collected, analyzed, and sold.\n\n#internet #data #scale"
+      }
+    },
+    {
+      "id": 52,
+      "day": 103,
+      "type": "tips",
+      "platforms": ["twitter", "linkedin"],
+      "es": {
+        "text": "Configuración de privacidad en Google que deberías cambiar YA:\n\n1. myaccount.google.com → Datos y privacidad\n2. Desactivá historial de ubicaciones\n3. Desactivá historial de YouTube\n4. Configurá borrado automático de actividad (3 meses)\n5. Revisá apps con acceso a tu cuenta\n6. Desactivá anuncios personalizados\n\nGoogle lo pone todo por defecto para recolectar más. Cambialo.\n\n#Google #privacidad #configuración"
+      },
+      "en": {
+        "text": "Google privacy settings you should change NOW:\n\n1. myaccount.google.com → Data & Privacy\n2. Disable location history\n3. Disable YouTube history\n4. Set auto-delete for activity (3 months)\n5. Review apps with account access\n6. Disable personalized ads\n\nGoogle defaults to collecting more. Change it.\n\n#Google #privacy #settings"
+      }
+    }
+  ]
+}

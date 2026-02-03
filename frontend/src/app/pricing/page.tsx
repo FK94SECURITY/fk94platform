@@ -9,7 +9,7 @@ import { useAuth } from '@/contexts/AuthContext'
 import { redirectToCheckout } from '@/lib/stripe'
 
 export default function PricingPage() {
-  const { t, language } = useLanguage()
+  const { language } = useLanguage()
   const { user } = useAuth()
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
@@ -26,7 +26,7 @@ export default function PricingPage() {
 
     try {
       await redirectToCheckout(user.email || '', user.id)
-    } catch (err) {
+    } catch {
       setError(language === 'es'
         ? 'Error al procesar el pago. Intentá de nuevo.'
         : 'Error processing payment. Please try again.')

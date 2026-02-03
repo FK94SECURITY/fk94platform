@@ -39,7 +39,7 @@ export default function AIChat({ auditContext }: AIChatProps) {
 
       const response = await askAI(userMessage, context);
       setMessages(prev => [...prev, { role: 'assistant', content: response.response }]);
-    } catch (error) {
+    } catch {
       setMessages(prev => [...prev, {
         role: 'assistant',
         content: 'Lo siento, hubo un error al procesar tu mensaje. Por favor intenta de nuevo.'

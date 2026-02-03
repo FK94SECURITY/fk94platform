@@ -67,35 +67,26 @@ const getProtocolSteps = (lang: Language) => [
 export default function ChecklistPage() {
   const { t, language } = useLanguage();
   const lang = language as Language;
-  const [completedItems, setCompletedItems] = useState<Set<string>>(new Set());
+  const [completedItems, setCompletedItems] = useState<Set<string>>(() => {
+    if (typeof window === 'undefined') return new Set();
+    try {
+      const saved = localStorage.getItem(STORAGE_KEY);
+      if (saved) return new Set(JSON.parse(saved));
+    } catch {
+      // Invalid data, start fresh
+    }
+    return new Set();
+  });
   const [activeCategory, setActiveCategory] = useState<string | null>(null);
   const [priorityFilter, setPriorityFilter] = useState<Priority | 'all'>('all');
-  const [isLoaded, setIsLoaded] = useState(false);
-  const [showIntro, setShowIntro] = useState(false);
+  const [isLoaded] = useState(() => typeof window !== 'undefined');
+  const [showIntro, setShowIntro] = useState(() => {
+    if (typeof window === 'undefined') return false;
+    return !localStorage.getItem(INTRO_SEEN_KEY);
+  });
   const [introStep, setIntroStep] = useState(0);
 
   const protocolSteps = getProtocolSteps(lang);
-
-  // Load from localStorage on mount
-  useEffect(() => {
-    const saved = localStorage.getItem(STORAGE_KEY);
-    if (saved) {
-      try {
-        const parsed = JSON.parse(saved);
-        setCompletedItems(new Set(parsed));
-      } catch {
-        // Invalid data, start fresh
-      }
-    }
-
-    // Check if intro was seen
-    const introSeen = localStorage.getItem(INTRO_SEEN_KEY);
-    if (!introSeen) {
-      setShowIntro(true);
-    }
-
-    setIsLoaded(true);
-  }, []);
 
   // Save to localStorage when items change
   useEffect(() => {

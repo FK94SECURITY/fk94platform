@@ -87,7 +87,7 @@ export default function AuditPage() {
   const [passwordValue, setPasswordValue] = useState('');
   const [auditResult, setAuditResult] = useState<AuditResult | null>(null);
   const [error, setError] = useState<string | null>(null);
-  const [auditsRemaining, setAuditsRemaining] = useState<number | null>(null);
+  const [, setAuditsRemaining] = useState<number | null>(null);
 
   const configs = getAuditTypeConfig(language);
   const config = configs[auditType];
@@ -138,7 +138,7 @@ export default function AuditPage() {
           setAuditsRemaining(profile.audits_remaining);
         }
       }
-    } catch (err) {
+    } catch {
       setError(language === 'es'
         ? 'Error al realizar el escaneo. Por favor intentá de nuevo.'
         : 'Error performing scan. Please try again.');
@@ -159,7 +159,7 @@ export default function AuditPage() {
       a.click();
       window.URL.revokeObjectURL(url);
       document.body.removeChild(a);
-    } catch (err) {
+    } catch {
       alert(language === 'es' ? 'Error generando reporte PDF' : 'Error generating PDF report');
     }
   };

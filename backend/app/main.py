@@ -1,6 +1,8 @@
 """
 FK94 Security Platform - Main Application
 """
+import time
+import logging
 from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 from contextlib import asynccontextmanager
@@ -12,6 +14,8 @@ from app.core.config import settings
 from app.api.routes import router
 from app.services import job_store
 from app.services.job_worker import job_worker
+
+logger = logging.getLogger(__name__)
 
 limiter = Limiter(key_func=get_remote_address, default_limits=["60/minute"])
 
@@ -64,6 +68,18 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+@app.middleware("http")
+async def log_response_time(request: Request, call_next):
+    start = time.perf_counter()
+    response = await call_next(request)
+    elapsed_ms = (time.perf_counter() - start) * 1000
+    if elapsed_ms > 1000:
+        logger.warning(f"{request.method} {request.url.path} took {elapsed_ms:.0f}ms")
+    else:
+        logger.info(f"{request.method} {request.url.path} {response.status_code} {elapsed_ms:.0f}ms")
+    response.headers["X-Response-Time"] = f"{elapsed_ms:.0f}ms"
+    return response
 
 # Include API routes
 app.include_router(router, prefix="/api/v1")

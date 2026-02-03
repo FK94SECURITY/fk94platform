@@ -46,8 +46,49 @@ export default function DashboardPage() {
     return (
       <>
         <Navbar />
-        <main className="min-h-screen pt-20 flex items-center justify-center">
-          <div className="w-12 h-12 border-4 border-emerald-500 border-t-transparent rounded-full animate-spin" />
+        <main className="min-h-screen pt-20">
+          <div className="max-w-6xl mx-auto px-4 py-12">
+            {/* Header skeleton */}
+            <div className="mb-8">
+              <div className="h-8 w-48 bg-zinc-800 rounded-lg animate-pulse mb-2" />
+              <div className="h-5 w-64 bg-zinc-800/60 rounded-lg animate-pulse" />
+            </div>
+            {/* Stats skeleton */}
+            <div className="grid sm:grid-cols-3 gap-6 mb-12">
+              {[1, 2, 3].map((i) => (
+                <div key={i} className="bg-zinc-900 border border-zinc-800 rounded-xl p-6">
+                  <div className="h-4 w-24 bg-zinc-800 rounded animate-pulse mb-3" />
+                  <div className="h-8 w-16 bg-zinc-800 rounded animate-pulse" />
+                </div>
+              ))}
+            </div>
+            {/* Actions skeleton */}
+            <div className="flex gap-4 mb-12">
+              <div className="h-12 w-36 bg-zinc-800 rounded-xl animate-pulse" />
+              <div className="h-12 w-36 bg-zinc-800 rounded-xl animate-pulse" />
+            </div>
+            {/* History skeleton */}
+            <div className="h-6 w-48 bg-zinc-800 rounded animate-pulse mb-6" />
+            <div className="space-y-4">
+              {[1, 2, 3].map((i) => (
+                <div key={i} className="bg-zinc-900 border border-zinc-800 rounded-xl p-6">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-4">
+                      <div className="w-10 h-10 bg-zinc-800 rounded-lg animate-pulse" />
+                      <div>
+                        <div className="h-5 w-40 bg-zinc-800 rounded animate-pulse mb-2" />
+                        <div className="h-4 w-28 bg-zinc-800/60 rounded animate-pulse" />
+                      </div>
+                    </div>
+                    <div className="text-right">
+                      <div className="h-8 w-12 bg-zinc-800 rounded animate-pulse mb-1" />
+                      <div className="h-4 w-16 bg-zinc-800/60 rounded animate-pulse" />
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
         </main>
         <Footer />
       </>

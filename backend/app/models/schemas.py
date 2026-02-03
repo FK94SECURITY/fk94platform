@@ -68,6 +68,23 @@ class PhoneCheckRequest(BaseModel):
     phone: str
     country_code: str = "AR"  # Default Argentina
 
+    @field_validator("phone")
+    @classmethod
+    def validate_phone(cls, v: str) -> str:
+        v = v.strip()
+        cleaned = re.sub(r'[^\d+]', '', v)
+        if not cleaned or len(cleaned) < 7 or len(cleaned) > 20:
+            raise ValueError("Phone number must be 7-20 digits")
+        return v
+
+    @field_validator("country_code")
+    @classmethod
+    def validate_country_code(cls, v: str) -> str:
+        v = v.strip().upper()
+        if not re.match(r'^[A-Z]{2}$', v):
+            raise ValueError("Country code must be 2 letters (e.g. AR, US)")
+        return v
+
 
 class DomainCheckRequest(BaseModel):
     domain: str
@@ -84,6 +101,28 @@ class DomainCheckRequest(BaseModel):
 class NameCheckRequest(BaseModel):
     full_name: str
     location: Optional[str] = None
+
+    @field_validator("full_name")
+    @classmethod
+    def validate_full_name(cls, v: str) -> str:
+        v = v.strip()
+        if not v or len(v) > 200:
+            raise ValueError("Name must be 1-200 characters")
+        if re.search(r'[<>{}()\[\];]', v):
+            raise ValueError("Name contains invalid characters")
+        return v
+
+    @field_validator("location")
+    @classmethod
+    def validate_location(cls, v: Optional[str]) -> Optional[str]:
+        if v is None:
+            return v
+        v = v.strip()
+        if len(v) > 200:
+            raise ValueError("Location must be under 200 characters")
+        if re.search(r'[<>{}()\[\];]', v):
+            raise ValueError("Location contains invalid characters")
+        return v
 
 
 class IPCheckRequest(BaseModel):
@@ -163,6 +202,14 @@ class MultiAuditJobRequest(MultiAuditRequest):
 class AIAnalysisRequest(BaseModel):
     query: str
     context: Optional[dict] = None
+
+    @field_validator("query")
+    @classmethod
+    def validate_query(cls, v: str) -> str:
+        v = v.strip()
+        if not v or len(v) > 5000:
+            raise ValueError("Query must be 1-5000 characters")
+        return v
 
 
 # === Response Models ===

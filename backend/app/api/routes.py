@@ -6,10 +6,26 @@ from fastapi.responses import StreamingResponse
 from datetime import datetime, timezone
 import uuid
 import io
+import logging
 from slowapi import Limiter
 from slowapi.util import get_remote_address
 
+logger = logging.getLogger(__name__)
 limiter = Limiter(key_func=get_remote_address)
+
+
+def _safe_error(e: Exception, context: str = "operation") -> HTTPException:
+    """Return user-friendly error without leaking internals."""
+    logger.error(f"Error in {context}: {type(e).__name__}: {e}")
+    if isinstance(e, HTTPException):
+        return e
+    if isinstance(e, ValueError):
+        return HTTPException(status_code=422, detail=str(e))
+    if "timeout" in str(e).lower() or "timed out" in str(e).lower():
+        return HTTPException(status_code=504, detail=f"External service timed out during {context}. Please try again.")
+    if "rate" in str(e).lower() and "limit" in str(e).lower():
+        return HTTPException(status_code=429, detail="External API rate limit reached. Please wait and try again.")
+    return HTTPException(status_code=500, detail=f"An error occurred during {context}. Please try again later.")
 
 from app.models.schemas import (
     EmailCheckRequest, PasswordCheckRequest, FullAuditRequest, AIAnalysisRequest,
@@ -47,7 +63,7 @@ async def check_email_breaches(request: EmailCheckRequest, req: Request):
         result = await osint_service.check_hibp_breaches(request.email)
         return result
     except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+        raise _safe_error(e, "email breach check")
 
 
 @router.post("/check/username", response_model=UsernameResult)
@@ -60,7 +76,7 @@ async def check_username_endpoint(request: UsernameCheckRequest, req: Request):
         result = await check_username(request.username)
         return result
     except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+        raise _safe_error(e, "username check")
 
 
 @router.post("/check/phone", response_model=PhoneResult)
@@ -73,7 +89,7 @@ async def check_phone_endpoint(request: PhoneCheckRequest, req: Request):
         result = await check_phone(request.phone, request.country_code)
         return result
     except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+        raise _safe_error(e, "phone check")
 
 
 @router.post("/check/domain", response_model=DomainResult)
@@ -86,7 +102,7 @@ async def check_domain_endpoint(request: DomainCheckRequest, req: Request):
         result = await check_domain(request.domain)
         return result
     except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+        raise _safe_error(e, "domain check")
 
 
 @router.post("/check/name", response_model=NameResult)
@@ -99,7 +115,7 @@ async def check_name_endpoint(request: NameCheckRequest, req: Request):
         result = await check_name(request.full_name, request.location)
         return result
     except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+        raise _safe_error(e, "name search")
 
 
 @router.post("/check/ip", response_model=IPResult)
@@ -112,7 +128,7 @@ async def check_ip_endpoint(request: IPCheckRequest, req: Request):
         result = await check_ip(request.ip_address)
         return result
     except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+        raise _safe_error(e, "IP check")
 
 
 @router.post("/check/wallet", response_model=WalletResult)
@@ -125,7 +141,7 @@ async def check_wallet_endpoint(request: WalletCheckRequest, req: Request):
         result = await check_wallet(request.address, request.chain)
         return result
     except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+        raise _safe_error(e, "wallet check")
 
 
 @router.post("/check/password", response_model=PasswordExposure)
@@ -139,7 +155,7 @@ async def check_password_exposure(request: PasswordCheckRequest, req: Request):
         result = await osint_service.check_password_pwned(request.password)
         return result
     except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+        raise _safe_error(e, "password check")
 
 
 # === FULL AUDIT ===
@@ -154,7 +170,7 @@ async def run_full_audit_endpoint(request: FullAuditRequest, req: Request):
     try:
         return await run_full_audit(request)
     except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+        raise _safe_error(e, "full audit")
 
 
 @router.post("/audit/multi", response_model=AuditResult)
@@ -168,7 +184,7 @@ async def run_multi_audit_endpoint(request: MultiAuditRequest, req: Request):
     except HTTPException:
         raise
     except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+        raise _safe_error(e, "multi audit")
 
 
 @router.post("/automation/audit/full", response_model=JobCreateResponse)
@@ -185,7 +201,7 @@ async def enqueue_full_audit(request: FullAuditJobRequest):
         )
         return JobCreateResponse(job_id=job["id"], status=JobStatus.QUEUED, job_type="full_audit")
     except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+        raise _safe_error(e, "job enqueue")
 
 
 @router.post("/automation/audit/multi", response_model=JobCreateResponse)
@@ -202,7 +218,7 @@ async def enqueue_multi_audit(request: MultiAuditJobRequest):
         )
         return JobCreateResponse(job_id=job["id"], status=JobStatus.QUEUED, job_type="multi_audit")
     except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+        raise _safe_error(e, "job enqueue")
 
 
 @router.get("/automation/jobs/{job_id}", response_model=JobInfo)
@@ -238,7 +254,7 @@ async def get_security_score(request: EmailCheckRequest):
         score = scoring_service.calculate_score(breach_result=breach_result)
         return score
     except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+        raise _safe_error(e, "security score")
 
 
 # === AI CHAT ===
@@ -268,7 +284,7 @@ async def ai_analyze(request: AIAnalysisRequest):
             recommendations=recommendations[:5]
         )
     except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+        raise _safe_error(e, "AI analysis")
 
 
 @router.post("/ai/chat")
@@ -280,7 +296,7 @@ async def ai_chat(message: str):
         response = await deepseek_service.chat(message)
         return {"response": response}
     except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+        raise _safe_error(e, "AI chat")
 
 
 # === HEALTH & STATUS ===
@@ -293,21 +309,41 @@ async def health_check():
 
 @router.get("/status/apis")
 async def api_status():
-    """Check status of integrated APIs"""
+    """Check status and reachability of integrated APIs"""
+    import httpx
     from app.core.config import settings
 
-    apis = {
-        "hibp": bool(settings.HIBP_API_KEY),
-        "dehashed": bool(settings.DEHASHED_API_KEY),
-        "hunter": bool(settings.HUNTER_API_KEY),
-        "ai": bool(settings.AI_API_KEY),
-        "deepseek": bool(settings.DEEPSEEK_API_KEY),
-    }
+    async def ping_api(name: str, url: str, headers: dict = None) -> dict:
+        try:
+            async with httpx.AsyncClient(timeout=5.0) as client:
+                resp = await client.get(url, headers=headers or {})
+                return {"configured": True, "reachable": resp.status_code < 500}
+        except Exception:
+            return {"configured": True, "reachable": False}
 
+    apis = {}
+
+    # HIBP
+    if settings.HIBP_API_KEY:
+        result = await ping_api("hibp", "https://haveibeenpwned.com/api/v3/breachedaccount/test@test.com",
+                                {"hibp-api-key": settings.HIBP_API_KEY, "user-agent": "FK94-Security-Platform"})
+        apis["hibp"] = result
+    else:
+        apis["hibp"] = {"configured": False, "reachable": False}
+
+    # AI
+    apis["ai"] = {"configured": bool(settings.AI_API_KEY), "reachable": None}
+    apis["deepseek"] = {"configured": bool(settings.DEEPSEEK_API_KEY), "reachable": None}
+    apis["dehashed"] = {"configured": bool(settings.DEHASHED_API_KEY), "reachable": None}
+    apis["hunter"] = {"configured": bool(settings.HUNTER_API_KEY), "reachable": None}
+    apis["stripe"] = {"configured": bool(settings.STRIPE_SECRET_KEY), "reachable": None}
+
+    configured_count = sum(1 for v in apis.values() if v["configured"])
     return {
         "apis": apis,
-        "all_configured": all(apis.values()),
-        "minimal_configured": apis["ai"] or apis["deepseek"]  # At minimum need AI
+        "configured_count": configured_count,
+        "total_apis": len(apis),
+        "minimal_configured": apis["ai"]["configured"] or apis["deepseek"]["configured"]
     }
 
 
@@ -370,7 +406,7 @@ async def generate_pdf_report(request: FullAuditRequest):
         )
 
     except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+        raise _safe_error(e, "PDF report generation")
 
 
 # === STRIPE PAYMENTS ===

@@ -42,8 +42,8 @@ export default function AuthModal({ isOpen, onClose }: AuthModalProps) {
         if (error) throw error
         setSuccess('Check your email to confirm your account!')
       }
-    } catch (err: any) {
-      setError(err.message || 'An error occurred')
+    } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : 'An error occurred')
     } finally {
       setLoading(false)
     }

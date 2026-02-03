@@ -37,3 +37,4 @@ build/
 *.sqlite3
 browser_sessions/
 .env.production
+.vercel

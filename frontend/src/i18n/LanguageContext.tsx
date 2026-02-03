@@ -1,6 +1,6 @@
 'use client'
 
-import { createContext, useContext, useState, useEffect, ReactNode } from 'react'
+import { createContext, useContext, useState, ReactNode } from 'react'
 import { en } from './en'
 import { es } from './es'
 
@@ -25,24 +25,20 @@ const defaultContextValue: LanguageContextType = {
 const LanguageContext = createContext<LanguageContextType>(defaultContextValue)
 
 export function LanguageProvider({ children }: { children: ReactNode }) {
-  const [language, setLanguageState] = useState<Language>('en')
-  const [mounted, setMounted] = useState(false)
-
-  useEffect(() => {
-    setMounted(true)
+  const [language, setLanguageState] = useState<Language>(() => {
+    if (typeof window === 'undefined') return 'en'
     // Check localStorage first
     const saved = localStorage.getItem('fk94-language') as Language
     if (saved && (saved === 'en' || saved === 'es')) {
-      setLanguageState(saved)
-      return
+      return saved
     }
-
     // Detect browser language
     const browserLang = navigator.language.toLowerCase()
     if (browserLang.startsWith('es')) {
-      setLanguageState('es')
+      return 'es'
     }
-  }, [])
+    return 'en'
+  })
 
   const setLanguage = (lang: Language) => {
     setLanguageState(lang)

@@ -1,0 +1,39 @@
+# FK94 Security - Raspberry Pi Cron Jobs
+# Install with: crontab crontab.txt
+# Or run setup_raspi.sh which installs these automatically.
+#
+# All times are server-local. Adjust for your timezone.
+
+SHELL=/bin/bash
+PATH=/usr/local/bin:/usr/bin:/bin
+PROJECT=/home/pi/fk94/automation
+PYTHON=/home/pi/fk94/automation/venv/bin/python3
+
+# --- Social Media Posting ---
+# Twitter: every 2 days at 10am
+0 10 */2 * * cd $PROJECT && $PYTHON browser_poster.py post twitter >> logs/poster.log 2>&1
+
+# LinkedIn: Monday and Thursday at 10am
+0 10 * * 1,4 cd $PROJECT && $PYTHON browser_poster.py post linkedin >> logs/poster.log 2>&1
+
+# Reddit: Wednesday at 2pm
+0 14 * * 3 cd $PROJECT && $PYTHON browser_poster.py post reddit >> logs/poster.log 2>&1
+
+# --- Engagement ---
+# X engagement: weekdays at 10am and 5pm (conservador)
+0 10,17 * * 1-5 cd $PROJECT && $PYTHON x_engagement.py >> logs/x_engagement.log 2>&1
+
+# Reddit engagement: weekdays at 3pm
+0 15 * * 1-5 cd $PROJECT && $PYTHON reddit_bot.py >> logs/reddit.log 2>&1
+
+# --- Content Generation ---
+# Generate new posts: Sunday 8am
+0 8 * * 0 cd $PROJECT && $PYTHON content_generator.py --count 10 >> logs/generator.log 2>&1
+
+# --- Monitoring ---
+# Health check: every 5 minutes 8am-10pm
+*/5 8-22 * * * cd $PROJECT && $PYTHON alert.py >> logs/alert.log 2>&1
+
+# --- Cleanup ---
+# Rotate logs: 1st of each month
+0 0 1 * * find $PROJECT/logs -name "*.log" -size +10M -exec truncate -s 0 {} \;
