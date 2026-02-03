@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
+import { toast } from 'sonner';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 import { useLanguage } from '@/i18n';
@@ -150,7 +151,7 @@ export default function HardenPage() {
 
   const handleCopy = () => {
     navigator.clipboard.writeText(generatedScript);
-    alert(t.harden.result.copied);
+    toast.success(t.harden.result.copied);
   };
 
   const progress = ((currentQuestion + 1) / questions.length) * 100;

@@ -19,15 +19,50 @@ REGLAS:
 
 class DeepSeekService:
     def __init__(self):
-        # Use Moonshot/Kimi K2.5 if available, fallback to DeepSeek
-        self.api_key = settings.AI_API_KEY or settings.DEEPSEEK_API_KEY
-        self.base_url = settings.AI_BASE_URL if settings.AI_API_KEY else settings.DEEPSEEK_BASE_URL
-        self.model = settings.AI_MODEL if settings.AI_API_KEY else settings.DEEPSEEK_MODEL
+        # Build ordered list of AI providers for fallback
+        self.providers = []
+        if settings.AI_API_KEY:
+            self.providers.append({
+                "name": "Moonshot",
+                "api_key": settings.AI_API_KEY,
+                "base_url": settings.AI_BASE_URL,
+                "model": settings.AI_MODEL,
+            })
+        if settings.DEEPSEEK_API_KEY:
+            self.providers.append({
+                "name": "DeepSeek",
+                "api_key": settings.DEEPSEEK_API_KEY,
+                "base_url": settings.DEEPSEEK_BASE_URL,
+                "model": settings.DEEPSEEK_MODEL,
+            })
+
+    async def _call_provider(self, provider: dict, messages: list) -> str:
+        """Call a single AI provider and return the response text."""
+        async with httpx.AsyncClient() as client:
+            response = await client.post(
+                f"{provider['base_url']}/v1/chat/completions",
+                headers={
+                    "Authorization": f"Bearer {provider['api_key']}",
+                    "Content-Type": "application/json"
+                },
+                json={
+                    "model": provider["model"],
+                    "messages": messages,
+                    "temperature": 1,
+                    "max_tokens": 600
+                },
+                timeout=60.0
+            )
+            response.raise_for_status()
+            data = response.json()
+            return data["choices"][0]["message"]["content"]
 
     async def analyze(self, prompt: str, context: Optional[dict] = None) -> str:
-        """Send a prompt to DeepSeek and get analysis"""
+        """Send a prompt to AI and get analysis, with automatic provider fallback."""
+        import logging
+        logger = logging.getLogger(__name__)
 
-        if not self.api_key:
+        if not self.providers:
             return "Error: AI API key not configured (AI_API_KEY o DEEPSEEK_API_KEY)"
 
         # Build context message if audit data provided
@@ -45,29 +80,53 @@ class DeepSeekService:
 
         messages.append({"role": "user", "content": prompt})
 
-        async with httpx.AsyncClient() as client:
+        last_error = None
+        for provider in self.providers:
             try:
-                response = await client.post(
-                    f"{self.base_url}/v1/chat/completions",
-                    headers={
-                        "Authorization": f"Bearer {self.api_key}",
-                        "Content-Type": "application/json"
-                    },
-                    json={
-                        "model": self.model,
-                        "messages": messages,
-                        "temperature": 1,
-                        "max_tokens": 600
-                    },
-                    timeout=60.0
-                )
-                response.raise_for_status()
-                data = response.json()
-                return data["choices"][0]["message"]["content"]
-            except httpx.HTTPError as e:
-                return f"Error conectando con DeepSeek: {str(e)}"
+                result = await self._call_provider(provider, messages)
+                return result
             except Exception as e:
-                return f"Error inesperado: {str(e)}"
+                last_error = e
+                logger.warning(f"AI provider {provider['name']} failed: {e}, trying next...")
+
+        logger.error(f"All AI providers failed. Last error: {last_error}")
+        return self._static_fallback(context)
+
+    def _static_fallback(self, context: Optional[dict] = None) -> str:
+        """Generate a static fallback response when all AI providers are unavailable."""
+        if not context:
+            return (
+                "⚠️ El análisis AI no está disponible temporalmente.\n\n"
+                "Tus resultados de auditoría siguen siendo válidos. "
+                "Revisá las recomendaciones y el puntaje de seguridad para entender tu nivel de riesgo."
+            )
+
+        parts = ["⚠️ El análisis AI no está disponible temporalmente.\n"]
+
+        score = context.get("security_score", {})
+        score_val = score.get("score", 0)
+        risk = score.get("risk_level", "unknown")
+
+        if score_val >= 80:
+            parts.append("🟢 **Estado:** Tu puntaje de seguridad es bueno.")
+        elif score_val >= 50:
+            parts.append("🟡 **Estado:** Tu puntaje indica riesgo medio. Revisá las recomendaciones.")
+        else:
+            parts.append("🔴 **Estado:** Tu puntaje indica riesgo alto. Tomá acción inmediata.")
+
+        breach = context.get("breach_check")
+        if breach and breach.get("breached"):
+            count = breach.get("breach_count", 0)
+            parts.append(f"\n⚠️ Se encontraron {count} filtraciones. Cambiá tus contraseñas afectadas.")
+
+        parts.append(
+            "\n**Qué hacer:**\n"
+            "1. Revisá las recomendaciones detalladas arriba\n"
+            "2. Cambiá contraseñas comprometidas\n"
+            "3. Activá 2FA en todas tus cuentas"
+        )
+
+        return "\n".join(parts)
 
     async def analyze_audit(self, audit_result: dict) -> str:
         """Analyze full audit result and provide recommendations"""

@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 import Link from 'next/link'
+import { toast } from 'sonner'
 import Navbar from '@/components/Navbar'
 import Footer from '@/components/Footer'
 import { useLanguage } from '@/i18n'
@@ -27,9 +28,11 @@ export default function PricingPage() {
     try {
       await redirectToCheckout(user.email || '', user.id)
     } catch {
-      setError(language === 'es'
+      const errorMsg = language === 'es'
         ? 'Error al procesar el pago. Intentá de nuevo.'
-        : 'Error processing payment. Please try again.')
+        : 'Error processing payment. Please try again.'
+      setError(errorMsg)
+      toast.error(errorMsg)
       setLoading(false)
     }
   }

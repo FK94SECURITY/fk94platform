@@ -1,7 +1,8 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
+import { toast } from 'sonner';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 import { useLanguage } from '@/i18n';
@@ -88,13 +89,87 @@ export default function AuditPage() {
   const [auditResult, setAuditResult] = useState<AuditResult | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [, setAuditsRemaining] = useState<number | null>(null);
+  const [progressStep, setProgressStep] = useState(0);
+  const progressTimer = useRef<NodeJS.Timeout | null>(null);
 
   const configs = getAuditTypeConfig(language);
   const config = configs[auditType];
 
+  const progressSteps = auditType === 'email'
+    ? [
+        language === 'es' ? 'Verificando filtraciones...' : 'Checking breaches...',
+        language === 'es' ? 'Analizando password...' : 'Analyzing password...',
+        language === 'es' ? 'Ejecutando OSINT...' : 'Running OSINT...',
+        language === 'es' ? 'Generando análisis AI...' : 'Generating AI analysis...',
+      ]
+    : [
+        language === 'es' ? 'Recopilando datos...' : 'Gathering data...',
+        language === 'es' ? 'Analizando resultados...' : 'Analyzing results...',
+        language === 'es' ? 'Generando análisis AI...' : 'Generating AI analysis...',
+      ];
+
+  useEffect(() => {
+    if (step === 'loading') {
+      setProgressStep(0);
+      const interval = auditType === 'email' ? 4000 : 3000;
+      progressTimer.current = setInterval(() => {
+        setProgressStep(prev => Math.min(prev + 1, progressSteps.length - 1));
+      }, interval);
+      return () => {
+        if (progressTimer.current) clearInterval(progressTimer.current);
+      };
+    } else {
+      if (progressTimer.current) clearInterval(progressTimer.current);
+    }
+  }, [step, auditType, progressSteps.length]);
+
+  const validateInput = (type: AuditType, value: string): string | null => {
+    const v = value.trim();
+    if (!v) return language === 'es' ? 'Este campo es requerido' : 'This field is required';
+
+    switch (type) {
+      case 'email': {
+        const emailRe = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!emailRe.test(v)) return language === 'es' ? 'Ingresá un email válido' : 'Enter a valid email address';
+        break;
+      }
+      case 'domain': {
+        const domainRe = /^[a-zA-Z0-9]([a-zA-Z0-9-]*[a-zA-Z0-9])?(\.[a-zA-Z]{2,})+$/;
+        if (!domainRe.test(v)) return language === 'es' ? 'Ingresá un dominio válido (ej: example.com)' : 'Enter a valid domain (e.g. example.com)';
+        break;
+      }
+      case 'ip': {
+        const ipv4Re = /^(\d{1,3}\.){3}\d{1,3}$/;
+        const ipv6Re = /^[0-9a-fA-F:]+$/;
+        if (!ipv4Re.test(v) && !ipv6Re.test(v)) return language === 'es' ? 'Ingresá una dirección IP válida' : 'Enter a valid IP address';
+        break;
+      }
+      case 'phone': {
+        const phoneRe = /^\+?[0-9\s-]{7,20}$/;
+        if (!phoneRe.test(v)) return language === 'es' ? 'Ingresá un número de teléfono válido' : 'Enter a valid phone number';
+        break;
+      }
+      case 'wallet': {
+        if (v.length < 26) return language === 'es' ? 'Ingresá una dirección de wallet válida' : 'Enter a valid wallet address';
+        break;
+      }
+      case 'username': {
+        if (v.length < 2) return language === 'es' ? 'El username debe tener al menos 2 caracteres' : 'Username must be at least 2 characters';
+        break;
+      }
+    }
+    return null;
+  };
+
   const handleAudit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!inputValue.trim()) return;
+
+    const validationError = validateInput(auditType, inputValue);
+    if (validationError) {
+      setError(validationError);
+      toast.error(validationError);
+      return;
+    }
 
     // Check if user can perform audit (if logged in)
     if (user && isConfigured) {
@@ -139,9 +214,11 @@ export default function AuditPage() {
         }
       }
     } catch {
-      setError(language === 'es'
+      const errorMsg = language === 'es'
         ? 'Error al realizar el escaneo. Por favor intentá de nuevo.'
-        : 'Error performing scan. Please try again.');
+        : 'Error performing scan. Please try again.';
+      setError(errorMsg);
+      toast.error(errorMsg);
       setStep('input');
     }
   };
@@ -160,7 +237,7 @@ export default function AuditPage() {
       window.URL.revokeObjectURL(url);
       document.body.removeChild(a);
     } catch {
-      alert(language === 'es' ? 'Error generando reporte PDF' : 'Error generating PDF report');
+      toast.error(language === 'es' ? 'Error generando reporte PDF' : 'Error generating PDF report');
     }
   };
 
@@ -304,15 +381,43 @@ export default function AuditPage() {
           )}
 
           {step === 'loading' && (
-            <div className="flex flex-col items-center justify-center min-h-[60vh] space-y-6">
+            <div className="flex flex-col items-center justify-center min-h-[60vh] space-y-8">
               <div className="w-20 h-20 border-4 border-emerald-500 border-t-transparent rounded-full animate-spin" />
               <div className="text-center">
                 <h2 className="text-2xl font-bold mb-2">
                   {language === 'es' ? `Analizando ${config.label}...` : `Analyzing ${config.label}...`}
                 </h2>
-                <p className="text-zinc-400">
+                <p className="text-zinc-400 mb-6">
                   {language === 'es' ? 'Esto puede tomar unos segundos' : 'This may take a few seconds'}
                 </p>
+              </div>
+              <div className="w-full max-w-md space-y-3">
+                {progressSteps.map((label, i) => (
+                  <div key={i} className="flex items-center gap-3">
+                    <div className={`w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold shrink-0 transition-colors ${
+                      i < progressStep
+                        ? 'bg-emerald-500 text-white'
+                        : i === progressStep
+                        ? 'bg-emerald-500/30 border-2 border-emerald-500 text-emerald-400 animate-pulse'
+                        : 'bg-zinc-800 text-zinc-500'
+                    }`}>
+                      {i < progressStep ? '\u2713' : i + 1}
+                    </div>
+                    <span className={`text-sm transition-colors ${
+                      i <= progressStep ? 'text-zinc-200' : 'text-zinc-600'
+                    }`}>
+                      {label}
+                    </span>
+                  </div>
+                ))}
+              </div>
+              <div className="w-full max-w-md">
+                <div className="w-full bg-zinc-800 rounded-full h-1.5">
+                  <div
+                    className="h-1.5 rounded-full bg-emerald-500 transition-all duration-1000"
+                    style={{ width: `${((progressStep + 1) / progressSteps.length) * 100}%` }}
+                  />
+                </div>
               </div>
             </div>
           )}

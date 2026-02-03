@@ -1,6 +1,7 @@
 'use client'
 
 import { createContext, useContext, useEffect, useState } from 'react'
+import { toast } from 'sonner'
 import { supabase, isSupabaseConfigured } from '@/lib/supabase'
 import { User, Session } from '@supabase/supabase-js'
 
@@ -26,15 +27,35 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       return
     }
 
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      setSession(session)
-      setUser(session?.user ?? null)
+    supabase.auth.getSession().then(({ data: { session }, error }) => {
+      if (error) {
+        console.error('Failed to restore session:', error.message)
+        setSession(null)
+        setUser(null)
+      } else {
+        setSession(session)
+        setUser(session?.user ?? null)
+      }
       setLoading(false)
     })
 
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
       setSession(session)
       setUser(session?.user ?? null)
+
+      if (event === 'TOKEN_REFRESHED') {
+        console.debug('Auth token refreshed')
+      }
+
+      if (event === 'SIGNED_OUT') {
+        setSession(null)
+        setUser(null)
+      }
+
+      // Handle expired or invalid session - user needs to re-authenticate
+      if (!session && event !== 'SIGNED_OUT' && event !== 'INITIAL_SESSION') {
+        toast.error('Your session has expired. Please sign in again.')
+      }
     })
 
     return () => subscription.unsubscribe()
