@@ -55,7 +55,12 @@ class DeepSeekService:
             )
             response.raise_for_status()
             data = response.json()
-            return data["choices"][0]["message"]["content"]
+            try:
+                return data["choices"][0]["message"]["content"]
+            except (KeyError, IndexError, TypeError):
+                import logging
+                logging.getLogger(__name__).error(f"Unexpected AI response format: {str(data)[:200]}")
+                raise ValueError("Unexpected response format from AI provider")
 
     async def analyze(self, prompt: str, context: Optional[dict] = None) -> str:
         """Send a prompt to AI and get analysis, with automatic provider fallback."""

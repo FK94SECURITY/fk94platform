@@ -5,6 +5,7 @@ import time
 import logging
 from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import JSONResponse
 from contextlib import asynccontextmanager
 from slowapi import Limiter, _rate_limit_exceeded_handler
 from slowapi.util import get_remote_address
@@ -27,15 +28,15 @@ async def lifespan(app: FastAPI):
     job_store.init_db(settings.JOB_DB_PATH)
     if settings.ENABLE_JOB_WORKER:
         await job_worker.start()
-    print(f"🚀 Starting {settings.APP_NAME}")
-    print(f"🤖 AI API: {'✅ Configured' if settings.AI_API_KEY else ('📡 DeepSeek' if settings.DEEPSEEK_API_KEY else '❌ Not configured')}")
-    print(f"🔍 HIBP API: {'✅ Configured' if settings.HIBP_API_KEY else '⚠️ Not configured'}")
-    print(f"🔒 Rate Limiting: ✅ Enabled (60 req/min general, 10 req/min checks, 5 req/min audits)")
+    logger.info(f"Starting {settings.APP_NAME}")
+    logger.info(f"AI API: {'Configured' if settings.AI_API_KEY else ('DeepSeek' if settings.DEEPSEEK_API_KEY else 'Not configured')}")
+    logger.info(f"HIBP API: {'Configured' if settings.HIBP_API_KEY else 'Not configured'}")
+    logger.info("Rate Limiting: Enabled (60 req/min general, 10 req/min checks, 5 req/min audits)")
     yield
     # Shutdown
     if settings.ENABLE_JOB_WORKER:
         await job_worker.stop()
-    print("👋 Shutting down...")
+    logger.info("Shutting down...")
 
 
 app = FastAPI(
@@ -69,6 +70,18 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+MAX_BODY_SIZE = 1_048_576  # 1 MB
+
+
+@app.middleware("http")
+async def limit_request_body(request: Request, call_next):
+    """Reject requests with bodies larger than MAX_BODY_SIZE."""
+    content_length = request.headers.get("content-length")
+    if content_length and int(content_length) > MAX_BODY_SIZE:
+        return JSONResponse(status_code=413, content={"detail": "Request body too large"})
+    return await call_next(request)
+
+
 @app.middleware("http")
 async def log_response_time(request: Request, call_next):
     start = time.perf_counter()
@@ -79,6 +92,12 @@ async def log_response_time(request: Request, call_next):
     else:
         logger.info(f"{request.method} {request.url.path} {response.status_code} {elapsed_ms:.0f}ms")
     response.headers["X-Response-Time"] = f"{elapsed_ms:.0f}ms"
+    response.headers["X-Content-Type-Options"] = "nosniff"
+    response.headers["X-Frame-Options"] = "DENY"
+    response.headers["X-XSS-Protection"] = "1; mode=block"
+    response.headers["Referrer-Policy"] = "strict-origin-when-cross-origin"
+    if not settings.DEBUG:
+        response.headers["Strict-Transport-Security"] = "max-age=31536000; includeSubDomains"
     return response
 
 # Include API routes

@@ -308,7 +308,8 @@ async def health_check():
 
 
 @router.get("/status/apis")
-async def api_status():
+@limiter.limit("10/minute")
+async def api_status(request: Request):
     """Check status and reachability of integrated APIs"""
     import httpx
     from app.core.config import settings
@@ -411,7 +412,25 @@ async def generate_pdf_report(request: FullAuditRequest):
 
 # === STRIPE PAYMENTS ===
 
-from pydantic import BaseModel
+from pydantic import BaseModel, field_validator
+from urllib.parse import urlparse
+
+ALLOWED_REDIRECT_HOSTS = {
+    "localhost",
+    "127.0.0.1",
+    "fk94platform.vercel.app",
+    "fk94security.com",
+    "www.fk94security.com",
+}
+
+
+def _validate_redirect_url(url: str) -> str:
+    parsed = urlparse(url)
+    if parsed.hostname not in ALLOWED_REDIRECT_HOSTS:
+        raise ValueError(f"Redirect URL host not allowed: {parsed.hostname}")
+    if parsed.scheme not in ("http", "https"):
+        raise ValueError("Redirect URL must use http or https")
+    return url
 
 
 class CheckoutRequest(BaseModel):
@@ -420,10 +439,20 @@ class CheckoutRequest(BaseModel):
     success_url: str = "http://localhost:3000/dashboard?success=true"
     cancel_url: str = "http://localhost:3000/pricing?cancelled=true"
 
+    @field_validator("success_url", "cancel_url")
+    @classmethod
+    def validate_urls(cls, v: str) -> str:
+        return _validate_redirect_url(v)
+
 
 class PortalRequest(BaseModel):
     customer_id: str
     return_url: str = "http://localhost:3000/dashboard"
+
+    @field_validator("return_url")
+    @classmethod
+    def validate_url(cls, v: str) -> str:
+        return _validate_redirect_url(v)
 
 
 @router.post("/stripe/create-checkout")

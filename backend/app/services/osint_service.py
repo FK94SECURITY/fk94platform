@@ -5,8 +5,11 @@ Integrates multiple OSINT APIs for comprehensive security checks
 import httpx
 import hashlib
 import asyncio
+import logging
 from typing import Optional
 from app.core.config import settings
+
+logger = logging.getLogger(__name__)
 from app.models.schemas import (
     BreachCheckResult, BreachInfo, PasswordExposure,
     OSINTResult, RiskLevel
@@ -84,7 +87,7 @@ class OSINTService:
                     return await self._check_hibp_free(email)
                 raise
             except Exception as e:
-                print(f"HIBP Error: {e}")
+                logger.warning(f"HIBP Error: {e}")
                 return await self._check_hibp_free(email)
 
     async def _check_hibp_free(self, email: str) -> BreachCheckResult:
@@ -127,7 +130,7 @@ class OSINTService:
                 return PasswordExposure(found=False, count=0, sources=[])
 
             except Exception as e:
-                print(f"Password check error: {e}")
+                logger.warning(f"Password check error: {e}")
                 return PasswordExposure(found=False, count=0, sources=[])
 
     # === DEHASHED ===
@@ -162,7 +165,7 @@ class OSINTService:
                 return PasswordExposure(found=False, count=0, sources=[])
 
             except Exception as e:
-                print(f"Dehashed error: {e}")
+                logger.warning(f"Dehashed error: {e}")
                 return None
 
     # === HUNTER.IO ===
@@ -184,7 +187,7 @@ class OSINTService:
                 return response.json().get("data", {})
 
             except Exception as e:
-                print(f"Hunter error: {e}")
+                logger.warning(f"Hunter.io error: {e}")
                 return None
 
     async def domain_search(self, domain: str) -> Optional[list]:
@@ -205,7 +208,7 @@ class OSINTService:
                 return data.get("emails", [])
 
             except Exception as e:
-                print(f"Hunter domain search error: {e}")
+                logger.warning(f"Hunter domain search error: {e}")
                 return None
 
     # === COMBINED OSINT ===

@@ -115,13 +115,24 @@ export default function AuditPage() {
       progressTimer.current = setInterval(() => {
         setProgressStep(prev => Math.min(prev + 1, progressSteps.length - 1));
       }, interval);
+
+      // Timeout: if loading takes more than 120s, show error
+      const timeout = setTimeout(() => {
+        setError(language === 'es'
+          ? 'El escaneo tardó demasiado. Por favor intentá de nuevo.'
+          : 'The scan timed out. Please try again.');
+        toast.error(language === 'es' ? 'Timeout del escaneo' : 'Scan timed out');
+        setStep('input');
+      }, 120000);
+
       return () => {
         if (progressTimer.current) clearInterval(progressTimer.current);
+        clearTimeout(timeout);
       };
     } else {
       if (progressTimer.current) clearInterval(progressTimer.current);
     }
-  }, [step, auditType, progressSteps.length]);
+  }, [step, auditType, progressSteps.length, language]);
 
   const validateInput = (type: AuditType, value: string): string | null => {
     const v = value.trim();
@@ -213,10 +224,25 @@ export default function AuditPage() {
           setAuditsRemaining(profile.audits_remaining);
         }
       }
-    } catch {
-      const errorMsg = language === 'es'
-        ? 'Error al realizar el escaneo. Por favor intentá de nuevo.'
-        : 'Error performing scan. Please try again.';
+    } catch (err: unknown) {
+      let errorMsg: string;
+      if (err instanceof Error && err.message.includes('429')) {
+        errorMsg = language === 'es'
+          ? 'Demasiadas solicitudes. Por favor esperá un momento e intentá de nuevo.'
+          : 'Too many requests. Please wait a moment and try again.';
+      } else if (err instanceof Error && err.message.includes('timeout')) {
+        errorMsg = language === 'es'
+          ? 'El escaneo tardó demasiado. Por favor intentá de nuevo.'
+          : 'The scan timed out. Please try again.';
+      } else if (err instanceof Error && err.message.includes('network')) {
+        errorMsg = language === 'es'
+          ? 'Error de conexión. Verificá tu conexión a internet.'
+          : 'Connection error. Check your internet connection.';
+      } else {
+        errorMsg = language === 'es'
+          ? 'Error al realizar el escaneo. Por favor intentá de nuevo.'
+          : 'Error performing scan. Please try again.';
+      }
       setError(errorMsg);
       toast.error(errorMsg);
       setStep('input');

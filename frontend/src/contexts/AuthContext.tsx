@@ -1,9 +1,12 @@
 'use client'
 
-import { createContext, useContext, useEffect, useState } from 'react'
+import { createContext, useContext, useEffect, useState, useCallback } from 'react'
+import { useRouter, usePathname } from 'next/navigation'
 import { toast } from 'sonner'
 import { supabase, isSupabaseConfigured } from '@/lib/supabase'
 import { User, Session } from '@supabase/supabase-js'
+
+const PROTECTED_ROUTES = ['/dashboard', '/audit']
 
 type AuthContextType = {
   user: User | null
@@ -21,6 +24,14 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<User | null>(null)
   const [session, setSession] = useState<Session | null>(null)
   const [loading, setLoading] = useState(isSupabaseConfigured)
+  const router = useRouter()
+  const pathname = usePathname()
+
+  const redirectIfProtected = useCallback(() => {
+    if (PROTECTED_ROUTES.some((r) => pathname.startsWith(r))) {
+      router.replace('/')
+    }
+  }, [pathname, router])
 
   useEffect(() => {
     if (!isSupabaseConfigured) {
@@ -52,14 +63,15 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         setUser(null)
       }
 
-      // Handle expired or invalid session - user needs to re-authenticate
+      // Handle expired or invalid session - redirect from protected routes
       if (!session && event !== 'SIGNED_OUT' && event !== 'INITIAL_SESSION') {
         toast.error('Your session has expired. Please sign in again.')
+        redirectIfProtected()
       }
     })
 
     return () => subscription.unsubscribe()
-  }, [])
+  }, [redirectIfProtected])
 
   const signIn = async (email: string, password: string) => {
     if (!isSupabaseConfigured) {
@@ -87,6 +99,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const signOut = async () => {
     if (!isSupabaseConfigured) return
     await supabase.auth.signOut()
+    router.replace('/')
   }
 
   return (

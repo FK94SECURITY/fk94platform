@@ -2,9 +2,12 @@
 FK94 Security Platform - Background Job Worker
 """
 import asyncio
+import logging
 from datetime import datetime, timezone
 
 from app.core.config import settings
+
+logger = logging.getLogger(__name__)
 from app.models.schemas import FullAuditRequest, MultiAuditRequest
 from app.services import job_store
 from app.services.audit_runner import run_full_audit, run_multi_audit
@@ -82,11 +85,13 @@ class JobWorker:
                     finished_at=self._utc_now(),
                 )
         except Exception as exc:
+            logger.exception(f"Job {job_id} ({job_type}) failed")
+            error_msg = str(exc)[:500]
             job_store.update_job(
                 self.db_path,
                 job_id,
                 status="failed",
-                error=str(exc),
+                error=error_msg,
                 finished_at=self._utc_now(),
             )
 

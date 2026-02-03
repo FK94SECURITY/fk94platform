@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react'
 import { createPortal } from 'react-dom'
 import { useAuth } from '@/contexts/AuthContext'
+import { useLanguage } from '@/i18n'
 
 type AuthModalProps = {
   isOpen: boolean
@@ -19,6 +20,7 @@ export default function AuthModal({ isOpen, onClose }: AuthModalProps) {
   const [mounted, setMounted] = useState(false)
 
   const { signIn, signUp } = useAuth()
+  const { language } = useLanguage()
 
   useEffect(() => {
     setMounted(true)
@@ -34,11 +36,11 @@ export default function AuthModal({ isOpen, onClose }: AuthModalProps) {
     // Client-side validation
     const emailRe = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
     if (!emailRe.test(email)) {
-      setError('Please enter a valid email address')
+      setError(language === 'es' ? 'Ingresá un email válido' : 'Please enter a valid email address')
       return
     }
     if (password.length < 6) {
-      setError('Password must be at least 6 characters')
+      setError(language === 'es' ? 'La contraseña debe tener al menos 6 caracteres' : 'Password must be at least 6 characters')
       return
     }
 
@@ -52,7 +54,7 @@ export default function AuthModal({ isOpen, onClose }: AuthModalProps) {
       } else {
         const { error } = await signUp(email, password)
         if (error) throw error
-        setSuccess('Check your email to confirm your account!')
+        setSuccess(language === 'es' ? 'Revisá tu email para confirmar tu cuenta!' : 'Check your email to confirm your account!')
       }
     } catch (err: unknown) {
       setError(err instanceof Error ? err.message : 'An error occurred')
@@ -110,7 +112,9 @@ export default function AuthModal({ isOpen, onClose }: AuthModalProps) {
         </button>
 
         <h2 style={{ fontSize: '24px', fontWeight: 'bold', color: 'white', marginBottom: '24px' }}>
-          {isLogin ? 'Login' : 'Create Account'}
+          {isLogin
+            ? (language === 'es' ? 'Iniciar sesión' : 'Login')
+            : (language === 'es' ? 'Crear cuenta' : 'Create Account')}
         </h2>
 
         <form onSubmit={handleSubmit}>
@@ -185,7 +189,11 @@ export default function AuthModal({ isOpen, onClose }: AuthModalProps) {
               opacity: loading ? 0.5 : 1,
             }}
           >
-            {loading ? 'Loading...' : (isLogin ? 'Sign In' : 'Create Account')}
+            {loading
+              ? (language === 'es' ? 'Cargando...' : 'Loading...')
+              : isLogin
+                ? (language === 'es' ? 'Ingresar' : 'Sign In')
+                : (language === 'es' ? 'Crear cuenta' : 'Create Account')}
           </button>
         </form>
 
@@ -204,13 +212,15 @@ export default function AuthModal({ isOpen, onClose }: AuthModalProps) {
               cursor: 'pointer',
             }}
           >
-            {isLogin ? "Don't have an account? Sign up" : 'Already have an account? Sign in'}
+            {isLogin
+              ? (language === 'es' ? '¿No tenés cuenta? Registrate' : "Don't have an account? Sign up")
+              : (language === 'es' ? '¿Ya tenés cuenta? Ingresá' : 'Already have an account? Sign in')}
           </button>
         </div>
 
         <div style={{ marginTop: '24px', paddingTop: '24px', borderTop: '1px solid #27272a' }}>
           <p style={{ color: '#71717a', fontSize: '12px', textAlign: 'center' }}>
-            Free tier includes 5 security audits per month
+            {language === 'es' ? 'El plan gratis incluye 5 auditorías por mes' : 'Free tier includes 5 security audits per month'}
           </p>
         </div>
       </div>

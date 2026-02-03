@@ -10,7 +10,7 @@ import AuthModal from './AuthModal'
 export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false)
   const [showAuthModal, setShowAuthModal] = useState(false)
-  const { t } = useLanguage()
+  const { t, language } = useLanguage()
   const { user, signOut, isConfigured } = useAuth()
 
   return (
@@ -58,7 +58,7 @@ export default function Navbar() {
                     href="/dashboard"
                     className="text-zinc-300 hover:text-white text-sm px-3 py-2"
                   >
-                    Dashboard
+                    {language === 'es' ? 'Panel' : 'Dashboard'}
                   </Link>
                   <span className="text-zinc-600">|</span>
                   <span className="text-zinc-400 text-sm">{user.email?.split('@')[0]}</span>
@@ -66,7 +66,7 @@ export default function Navbar() {
                     onClick={() => signOut()}
                     className="text-zinc-400 hover:text-red-400 text-sm px-2 py-1"
                   >
-                    Logout
+                    {language === 'es' ? 'Cerrar sesión' : 'Logout'}
                   </button>
                 </div>
               ) : (
@@ -74,7 +74,7 @@ export default function Navbar() {
                   onClick={() => setShowAuthModal(true)}
                   className="text-zinc-300 hover:text-white px-3 py-2 ml-2"
                 >
-                  Login
+                  {language === 'es' ? 'Iniciar sesión' : 'Login'}
                 </button>
               )
             )}
@@ -115,16 +115,37 @@ export default function Navbar() {
             <Link href="/audit" className="block bg-emerald-600 text-center py-3 rounded-lg font-medium mt-2">
               {t.nav.scanNow}
             </Link>
-            {isConfigured && !user && (
-              <button
-                onClick={() => {
-                  setShowAuthModal(true)
-                  setIsOpen(false)
-                }}
-                className="block w-full text-center text-zinc-300 py-3 mt-2"
-              >
-                Login
-              </button>
+            {isConfigured && (
+              user ? (
+                <div className="space-y-2">
+                  <Link
+                    href="/dashboard"
+                    className="block text-zinc-300 hover:text-white px-3 py-2 hover:bg-zinc-800 rounded-lg"
+                    onClick={() => setIsOpen(false)}
+                  >
+                    {language === 'es' ? 'Panel' : 'Dashboard'}
+                  </Link>
+                  <button
+                    onClick={() => {
+                      signOut()
+                      setIsOpen(false)
+                    }}
+                    className="block w-full text-left text-zinc-400 hover:text-red-400 px-3 py-2"
+                  >
+                    {language === 'es' ? 'Cerrar sesión' : 'Logout'}
+                  </button>
+                </div>
+              ) : (
+                <button
+                  onClick={() => {
+                    setShowAuthModal(true)
+                    setIsOpen(false)
+                  }}
+                  className="block w-full text-center text-zinc-300 py-3 mt-2"
+                >
+                  {language === 'es' ? 'Iniciar sesión' : 'Login'}
+                </button>
+              )
             )}
           </div>
         )}

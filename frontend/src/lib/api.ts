@@ -157,10 +157,29 @@ export interface AIResponse {
   recommendations: string[];
 }
 
+// === Retry Helper ===
+
+async function fetchWithRetry(
+  url: string,
+  options: RequestInit,
+  retries = 2,
+  delayMs = 1000
+): Promise<Response> {
+  for (let attempt = 0; attempt <= retries; attempt++) {
+    const response = await fetch(url, options);
+    if (response.ok || response.status < 500 || attempt === retries) {
+      return response;
+    }
+    await new Promise((r) => setTimeout(r, delayMs * (attempt + 1)));
+  }
+  // Unreachable, but TypeScript needs it
+  return fetch(url, options);
+}
+
 // === API Functions ===
 
 export async function checkEmail(email: string): Promise<BreachCheckResult> {
-  const response = await fetch(`${API_BASE}/check/email`, {
+  const response = await fetchWithRetry(`${API_BASE}/check/email`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ email }),
@@ -174,7 +193,7 @@ export async function checkEmail(email: string): Promise<BreachCheckResult> {
 }
 
 export async function checkUsername(username: string): Promise<UsernameResult> {
-  const response = await fetch(`${API_BASE}/check/username`, {
+  const response = await fetchWithRetry(`${API_BASE}/check/username`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ username }),
@@ -188,7 +207,7 @@ export async function checkUsername(username: string): Promise<UsernameResult> {
 }
 
 export async function checkPhone(phone: string, countryCode: string = 'AR'): Promise<PhoneResult> {
-  const response = await fetch(`${API_BASE}/check/phone`, {
+  const response = await fetchWithRetry(`${API_BASE}/check/phone`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ phone, country_code: countryCode }),
@@ -202,7 +221,7 @@ export async function checkPhone(phone: string, countryCode: string = 'AR'): Pro
 }
 
 export async function checkDomain(domain: string): Promise<DomainResult> {
-  const response = await fetch(`${API_BASE}/check/domain`, {
+  const response = await fetchWithRetry(`${API_BASE}/check/domain`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ domain }),
@@ -216,7 +235,7 @@ export async function checkDomain(domain: string): Promise<DomainResult> {
 }
 
 export async function checkName(fullName: string, location?: string): Promise<NameResult> {
-  const response = await fetch(`${API_BASE}/check/name`, {
+  const response = await fetchWithRetry(`${API_BASE}/check/name`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ full_name: fullName, location }),
@@ -230,7 +249,7 @@ export async function checkName(fullName: string, location?: string): Promise<Na
 }
 
 export async function checkIP(ipAddress: string): Promise<IPResult> {
-  const response = await fetch(`${API_BASE}/check/ip`, {
+  const response = await fetchWithRetry(`${API_BASE}/check/ip`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ ip_address: ipAddress }),
@@ -244,7 +263,7 @@ export async function checkIP(ipAddress: string): Promise<IPResult> {
 }
 
 export async function getSecurityScore(email: string): Promise<SecurityScore> {
-  const response = await fetch(`${API_BASE}/score`, {
+  const response = await fetchWithRetry(`${API_BASE}/score`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ email }),
@@ -258,7 +277,7 @@ export async function getSecurityScore(email: string): Promise<SecurityScore> {
 }
 
 export async function runFullAudit(email: string, password?: string): Promise<AuditResult> {
-  const response = await fetch(`${API_BASE}/audit/full`, {
+  const response = await fetchWithRetry(`${API_BASE}/audit/full`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({
@@ -281,7 +300,7 @@ export async function runMultiAudit(
   value: string,
   extraData?: Record<string, string>
 ): Promise<AuditResult> {
-  const response = await fetch(`${API_BASE}/audit/multi`, {
+  const response = await fetchWithRetry(`${API_BASE}/audit/multi`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({
@@ -299,7 +318,7 @@ export async function runMultiAudit(
 }
 
 export async function askAI(query: string, context?: object): Promise<AIResponse> {
-  const response = await fetch(`${API_BASE}/ai/analyze`, {
+  const response = await fetchWithRetry(`${API_BASE}/ai/analyze`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ query, context }),
@@ -313,7 +332,7 @@ export async function askAI(query: string, context?: object): Promise<AIResponse
 }
 
 export async function downloadReport(email: string): Promise<Blob> {
-  const response = await fetch(`${API_BASE}/report/pdf`, {
+  const response = await fetchWithRetry(`${API_BASE}/report/pdf`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({

@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { askAI, AuditResult } from '@/lib/api';
+import { useLanguage } from '@/i18n';
 
 interface AIChatProps {
   auditContext?: AuditResult;
@@ -12,11 +13,22 @@ interface Message {
   content: string;
 }
 
+const GREETINGS = {
+  es: '¡Hola! Soy el asistente de seguridad de FK94. Puedo ayudarte a entender los resultados de tu auditoría o responder cualquier pregunta sobre ciberseguridad. ¿En qué te puedo ayudar?',
+  en: 'Hi! I\'m the FK94 security assistant. I can help you understand your audit results or answer any cybersecurity questions. How can I help?',
+};
+
+const ERROR_MESSAGES = {
+  es: 'Lo siento, hubo un error al procesar tu mensaje. Por favor intenta de nuevo.',
+  en: 'Sorry, there was an error processing your message. Please try again.',
+};
+
 export default function AIChat({ auditContext }: AIChatProps) {
+  const { language } = useLanguage();
   const [messages, setMessages] = useState<Message[]>([
     {
       role: 'assistant',
-      content: '¡Hola! Soy el asistente de seguridad de FK94. Puedo ayudarte a entender los resultados de tu auditoría o responder cualquier pregunta sobre ciberseguridad. ¿En qué te puedo ayudar?'
+      content: GREETINGS[language],
     }
   ]);
   const [input, setInput] = useState('');
@@ -42,7 +54,7 @@ export default function AIChat({ auditContext }: AIChatProps) {
     } catch {
       setMessages(prev => [...prev, {
         role: 'assistant',
-        content: 'Lo siento, hubo un error al procesar tu mensaje. Por favor intenta de nuevo.'
+        content: ERROR_MESSAGES[language],
       }]);
     } finally {
       setLoading(false);
@@ -103,7 +115,7 @@ export default function AIChat({ auditContext }: AIChatProps) {
             value={input}
             onChange={(e) => setInput(e.target.value)}
             onKeyDown={(e) => e.key === 'Enter' && handleSend()}
-            placeholder="Preguntame sobre seguridad..."
+            placeholder={language === 'es' ? 'Preguntame sobre seguridad...' : 'Ask me about security...'}
             className="flex-1 px-4 py-3 bg-gray-800 border border-gray-700 rounded-xl text-white placeholder-gray-500 focus:outline-none focus:border-blue-500"
           />
           <button
