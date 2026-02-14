@@ -70,8 +70,8 @@ export default function ContactPage() {
                     </div>
                     <div>
                       <h3 className="font-semibold mb-1">Email</h3>
-                      <a href="mailto:contact@fk94security.com" className="text-zinc-400 hover:text-emerald-400 transition">
-                        contact@fk94security.com
+                      <a href="mailto:info@fk94security.com" className="text-zinc-400 hover:text-emerald-400 transition">
+                        info@fk94security.com
                       </a>
                     </div>
                   </div>

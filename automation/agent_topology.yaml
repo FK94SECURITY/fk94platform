@@ -1,6 +1,7 @@
 version: 1
 project: fk94-autonomous-growth
 mode: guarded
+growth_stage: pre_pmf
 
 global:
   timezone: America/Argentina/Buenos_Aires
@@ -130,8 +131,25 @@ agents:
       - implementation_tasks
 
 pipelines:
+  - id: traffic_engine
+    description: top-of-funnel traffic generation before PMF
+    stages: [pre_pmf, post_pmf]
+    steps:
+      - event: openclaw_tick
+      - action: acquisition.publish_distribution_tasks
+      - action: content.generate_daily_batch
+
+  - id: lead_capture
+    description: convert tool usage into captured leads
+    stages: [pre_pmf, post_pmf]
+    steps:
+      - event: tool_opened|scan_started|script_generated
+      - action: lead_qualifier.score
+      - action: sales_closer.trigger_followup
+
   - id: free_to_paid
     description: convert free users to paid subscription
+    stages: [pre_pmf, post_pmf]
     steps:
       - event: scan_completed
       - action: lead_qualifier.score
@@ -141,6 +159,7 @@ pipelines:
 
   - id: paid_to_consulting
     description: upsell high-risk paid users into consulting
+    stages: [post_pmf]
     steps:
       - event: scan_completed
       - condition: "risk_level in ['critical','high']"
@@ -149,6 +168,7 @@ pipelines:
 
   - id: churn_recovery
     description: recover failed/canceled subscriptions
+    stages: [post_pmf]
     steps:
       - event: payment_failed
       - action: customer_success.send_recovery_sequence

@@ -163,8 +163,8 @@ export default function PrivacyPage() {
                 {isEs
                   ? 'Para preguntas sobre privacidad o para ejercer tus derechos, contactanos en '
                   : 'For privacy questions or to exercise your rights, contact us at '}
-                <a href="mailto:contact@fk94security.com" className="text-emerald-400 hover:text-emerald-300 transition">
-                  contact@fk94security.com
+                <a href="mailto:info@fk94security.com" className="text-emerald-400 hover:text-emerald-300 transition">
+                  info@fk94security.com
                 </a>
               </p>
             </div>

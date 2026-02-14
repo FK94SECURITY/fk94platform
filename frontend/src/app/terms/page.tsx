@@ -169,8 +169,8 @@ export default function TermsPage() {
                 {isEs
                   ? 'Si tenés preguntas sobre estos Términos de Servicio, contactanos en '
                   : 'If you have questions about these Terms of Service, contact us at '}
-                <a href="mailto:contact@fk94security.com" className="text-emerald-400 hover:text-emerald-300 transition">
-                  contact@fk94security.com
+                <a href="mailto:info@fk94security.com" className="text-emerald-400 hover:text-emerald-300 transition">
+                  info@fk94security.com
                 </a>
               </p>
             </div>

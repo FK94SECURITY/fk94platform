@@ -15,6 +15,18 @@ python3 openclaw_runner.py --once
 python3 openclaw_runner.py --daemon --interval 300
 ```
 
+Recommended startup mode (no clients yet):
+```bash
+export ENABLE_AUTONOMY=true
+export AUTONOMY_MODE=guarded
+export GROWTH_STAGE=pre_pmf
+export MIN_PAID_CUSTOMERS_FOR_POST_PMF=5
+python3 openclaw_runner.py --once
+```
+
+In `pre_pmf`, only acquisition/capture/conversion loops run.
+Retention-heavy loops (churn recovery, paid consulting upsell) are skipped until enough paid users exist.
+
 Deploy helpers:
 ```bash
 # Validate environment + API readiness

@@ -32,7 +32,7 @@ class Settings(BaseSettings):
 
     # Email provider (optional, for lead notifications)
     RESEND_API_KEY: str = ""
-    CONTACT_EMAIL_TO: str = "contact@fk94security.com"
+    CONTACT_EMAIL_TO: str = "info@fk94security.com"
 
     # OpenClaw (optional, required for managed orchestration)
     OPENCLAW_API_URL: str = ""

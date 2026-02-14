@@ -41,6 +41,8 @@ class Runner:
             self.api_base = "http://localhost:8000/api/v1"
         self.enabled = os.environ.get("ENABLE_AUTONOMY", "false").lower() == "true"
         self.mode = os.environ.get("AUTONOMY_MODE", "guarded").lower()
+        self.growth_stage = os.environ.get("GROWTH_STAGE", "pre_pmf").lower()
+        self.min_paid_for_post_pmf = int(os.environ.get("MIN_PAID_CUSTOMERS_FOR_POST_PMF", "5"))
         self.daily_spend_cap = float(os.environ.get("DAILY_SPEND_CAP_USD", "300"))
         self.topology = self._load_topology()
 
@@ -81,12 +83,25 @@ class Runner:
         checkout_started = int(stats.get("checkout_started", 0))
         checkout_success = int(stats.get("checkout_success", 0))
         scans = int(stats.get("scan_completed", 0))
+        total_events = int(stats.get("total_events", 0))
+
+        if pipeline_id == "traffic_engine":
+            log.info("[traffic_engine] Running acquisition/content heartbeat")
+            self._track("openclaw_acquisition_tick", {"stage": self.growth_stage, "total_events": total_events})
+            return
+
+        if pipeline_id == "lead_capture":
+            log.info("[lead_capture] Running lead capture heartbeat")
+            self._track("openclaw_lead_capture_tick", {"stage": self.growth_stage, "scan_completed": scans})
+            return
 
         if pipeline_id == "free_to_paid":
             if checkout_started > checkout_success:
                 pending = checkout_started - checkout_success
                 log.info(f"[free_to_paid] Found {pending} pending checkouts; triggering recovery flow")
                 self._track("openclaw_checkout_recovery_triggered", {"pending_checkouts": pending})
+            else:
+                self._track("openclaw_upgrade_nurture_tick", {"stage": self.growth_stage, "scan_completed": scans})
             return
 
         if pipeline_id == "paid_to_consulting":
@@ -105,12 +120,30 @@ class Runner:
             return
 
         stats = self._get_stats()
+        paid_customers = int(stats.get("checkout_success", 0))
+        effective_stage = self.growth_stage
+        if self.growth_stage == "pre_pmf" and paid_customers >= self.min_paid_for_post_pmf:
+            effective_stage = "post_pmf"
+        self.growth_stage = effective_stage
+
         log.info(f"Fetched stats: {stats}")
-        self._track("openclaw_tick", {"mode": self.mode, "daily_spend_cap": self.daily_spend_cap})
+        self._track(
+            "openclaw_tick",
+            {
+                "mode": self.mode,
+                "growth_stage": self.growth_stage,
+                "daily_spend_cap": self.daily_spend_cap,
+                "paid_customers_estimate": paid_customers,
+            },
+        )
 
         for pipeline in self.topology.get("pipelines", []):
             pipeline_id = pipeline.get("id", "")
             if not pipeline_id:
+                continue
+            stages = pipeline.get("stages", [])
+            if stages and self.growth_stage not in stages:
+                log.info(f"[{pipeline_id}] Skipped for stage={self.growth_stage}")
                 continue
             self._execute_pipeline_once(pipeline_id, stats)
 
