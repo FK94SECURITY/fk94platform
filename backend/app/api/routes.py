@@ -57,7 +57,7 @@ router = APIRouter()
 
 @router.post("/check/email", response_model=BreachCheckResult)
 @limiter.limit("10/minute")
-async def check_email_breaches(payload: EmailCheckRequest, request: Request):
+async def check_email_breaches(request: Request, payload: EmailCheckRequest):
     """
     Quick breach check for an email address.
     Returns breach count and risk level.
@@ -71,7 +71,7 @@ async def check_email_breaches(payload: EmailCheckRequest, request: Request):
 
 @router.post("/check/username", response_model=UsernameResult)
 @limiter.limit("10/minute")
-async def check_username_endpoint(payload: UsernameCheckRequest, request: Request):
+async def check_username_endpoint(request: Request, payload: UsernameCheckRequest):
     """
     Check if a username exists across multiple platforms.
     """
@@ -84,7 +84,7 @@ async def check_username_endpoint(payload: UsernameCheckRequest, request: Reques
 
 @router.post("/check/phone", response_model=PhoneResult)
 @limiter.limit("10/minute")
-async def check_phone_endpoint(payload: PhoneCheckRequest, request: Request):
+async def check_phone_endpoint(request: Request, payload: PhoneCheckRequest):
     """
     Check phone number information and breaches.
     """
@@ -97,7 +97,7 @@ async def check_phone_endpoint(payload: PhoneCheckRequest, request: Request):
 
 @router.post("/check/domain", response_model=DomainResult)
 @limiter.limit("10/minute")
-async def check_domain_endpoint(payload: DomainCheckRequest, request: Request):
+async def check_domain_endpoint(request: Request, payload: DomainCheckRequest):
     """
     Check domain security configuration (SSL, DNS, SPF, DMARC).
     """
@@ -110,7 +110,7 @@ async def check_domain_endpoint(payload: DomainCheckRequest, request: Request):
 
 @router.post("/check/name", response_model=NameResult)
 @limiter.limit("10/minute")
-async def check_name_endpoint(payload: NameCheckRequest, request: Request):
+async def check_name_endpoint(request: Request, payload: NameCheckRequest):
     """
     Search for public information about a person.
     """
@@ -123,7 +123,7 @@ async def check_name_endpoint(payload: NameCheckRequest, request: Request):
 
 @router.post("/check/ip", response_model=IPResult)
 @limiter.limit("10/minute")
-async def check_ip_endpoint(payload: IPCheckRequest, request: Request):
+async def check_ip_endpoint(request: Request, payload: IPCheckRequest):
     """
     Check IP address reputation and information.
     """
@@ -136,7 +136,7 @@ async def check_ip_endpoint(payload: IPCheckRequest, request: Request):
 
 @router.post("/check/wallet", response_model=WalletResult)
 @limiter.limit("10/minute")
-async def check_wallet_endpoint(payload: WalletCheckRequest, request: Request):
+async def check_wallet_endpoint(request: Request, payload: WalletCheckRequest):
     """
     Check crypto wallet for identity linking and sanctions.
     """
@@ -149,7 +149,7 @@ async def check_wallet_endpoint(payload: WalletCheckRequest, request: Request):
 
 @router.post("/check/password", response_model=PasswordExposure)
 @limiter.limit("10/minute")
-async def check_password_exposure(payload: PasswordCheckRequest, request: Request):
+async def check_password_exposure(request: Request, payload: PasswordCheckRequest):
     """
     Check if a password has been exposed in data breaches.
     Uses k-anonymity - password is never sent over the network.
@@ -165,7 +165,7 @@ async def check_password_exposure(payload: PasswordCheckRequest, request: Reques
 
 @router.post("/audit/full", response_model=AuditResult)
 @limiter.limit("5/minute")
-async def run_full_audit_endpoint(payload: FullAuditRequest, request: Request):
+async def run_full_audit_endpoint(request: Request, payload: FullAuditRequest):
     """
     Run comprehensive security audit on an email.
     Checks breaches, password exposure, OSINT, and generates AI analysis.
@@ -178,7 +178,7 @@ async def run_full_audit_endpoint(payload: FullAuditRequest, request: Request):
 
 @router.post("/audit/multi", response_model=AuditResult)
 @limiter.limit("5/minute")
-async def run_multi_audit_endpoint(payload: MultiAuditRequest, request: Request):
+async def run_multi_audit_endpoint(request: Request, payload: MultiAuditRequest):
     """
     Run audit on different data types: username, phone, domain, name, or IP.
     """
@@ -306,7 +306,7 @@ async def ai_chat(message: str):
 
 @router.post("/events/track", response_model=EventTrackResponse)
 @limiter.limit("120/minute")
-async def track_event_endpoint(payload: EventTrackRequest, request: Request):
+async def track_event_endpoint(request: Request, payload: EventTrackRequest):
     """Track product and growth events for automation pipelines."""
     try:
         tracked = event_store.track_event(
@@ -324,7 +324,7 @@ async def track_event_endpoint(payload: EventTrackRequest, request: Request):
 
 @router.post("/contact/lead", response_model=LeadCreateResponse)
 @limiter.limit("20/hour")
-async def create_contact_lead(payload: ContactLeadRequest, request: Request):
+async def create_contact_lead(request: Request, payload: ContactLeadRequest):
     """Store contact leads and optionally send notification email."""
     try:
         lead = event_store.create_lead(
