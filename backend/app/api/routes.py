@@ -57,13 +57,13 @@ router = APIRouter()
 
 @router.post("/check/email", response_model=BreachCheckResult)
 @limiter.limit("10/minute")
-async def check_email_breaches(request: EmailCheckRequest, req: Request):
+async def check_email_breaches(payload: EmailCheckRequest, request: Request):
     """
     Quick breach check for an email address.
     Returns breach count and risk level.
     """
     try:
-        result = await osint_service.check_hibp_breaches(request.email)
+        result = await osint_service.check_hibp_breaches(payload.email)
         return result
     except Exception as e:
         raise _safe_error(e, "email breach check")
@@ -71,12 +71,12 @@ async def check_email_breaches(request: EmailCheckRequest, req: Request):
 
 @router.post("/check/username", response_model=UsernameResult)
 @limiter.limit("10/minute")
-async def check_username_endpoint(request: UsernameCheckRequest, req: Request):
+async def check_username_endpoint(payload: UsernameCheckRequest, request: Request):
     """
     Check if a username exists across multiple platforms.
     """
     try:
-        result = await check_username(request.username)
+        result = await check_username(payload.username)
         return result
     except Exception as e:
         raise _safe_error(e, "username check")
@@ -84,12 +84,12 @@ async def check_username_endpoint(request: UsernameCheckRequest, req: Request):
 
 @router.post("/check/phone", response_model=PhoneResult)
 @limiter.limit("10/minute")
-async def check_phone_endpoint(request: PhoneCheckRequest, req: Request):
+async def check_phone_endpoint(payload: PhoneCheckRequest, request: Request):
     """
     Check phone number information and breaches.
     """
     try:
-        result = await check_phone(request.phone, request.country_code)
+        result = await check_phone(payload.phone, payload.country_code)
         return result
     except Exception as e:
         raise _safe_error(e, "phone check")
@@ -97,12 +97,12 @@ async def check_phone_endpoint(request: PhoneCheckRequest, req: Request):
 
 @router.post("/check/domain", response_model=DomainResult)
 @limiter.limit("10/minute")
-async def check_domain_endpoint(request: DomainCheckRequest, req: Request):
+async def check_domain_endpoint(payload: DomainCheckRequest, request: Request):
     """
     Check domain security configuration (SSL, DNS, SPF, DMARC).
     """
     try:
-        result = await check_domain(request.domain)
+        result = await check_domain(payload.domain)
         return result
     except Exception as e:
         raise _safe_error(e, "domain check")
@@ -110,12 +110,12 @@ async def check_domain_endpoint(request: DomainCheckRequest, req: Request):
 
 @router.post("/check/name", response_model=NameResult)
 @limiter.limit("10/minute")
-async def check_name_endpoint(request: NameCheckRequest, req: Request):
+async def check_name_endpoint(payload: NameCheckRequest, request: Request):
     """
     Search for public information about a person.
     """
     try:
-        result = await check_name(request.full_name, request.location)
+        result = await check_name(payload.full_name, payload.location)
         return result
     except Exception as e:
         raise _safe_error(e, "name search")
@@ -123,12 +123,12 @@ async def check_name_endpoint(request: NameCheckRequest, req: Request):
 
 @router.post("/check/ip", response_model=IPResult)
 @limiter.limit("10/minute")
-async def check_ip_endpoint(request: IPCheckRequest, req: Request):
+async def check_ip_endpoint(payload: IPCheckRequest, request: Request):
     """
     Check IP address reputation and information.
     """
     try:
-        result = await check_ip(request.ip_address)
+        result = await check_ip(payload.ip_address)
         return result
     except Exception as e:
         raise _safe_error(e, "IP check")
@@ -136,12 +136,12 @@ async def check_ip_endpoint(request: IPCheckRequest, req: Request):
 
 @router.post("/check/wallet", response_model=WalletResult)
 @limiter.limit("10/minute")
-async def check_wallet_endpoint(request: WalletCheckRequest, req: Request):
+async def check_wallet_endpoint(payload: WalletCheckRequest, request: Request):
     """
     Check crypto wallet for identity linking and sanctions.
     """
     try:
-        result = await check_wallet(request.address, request.chain)
+        result = await check_wallet(payload.address, payload.chain)
         return result
     except Exception as e:
         raise _safe_error(e, "wallet check")
@@ -149,13 +149,13 @@ async def check_wallet_endpoint(request: WalletCheckRequest, req: Request):
 
 @router.post("/check/password", response_model=PasswordExposure)
 @limiter.limit("10/minute")
-async def check_password_exposure(request: PasswordCheckRequest, req: Request):
+async def check_password_exposure(payload: PasswordCheckRequest, request: Request):
     """
     Check if a password has been exposed in data breaches.
     Uses k-anonymity - password is never sent over the network.
     """
     try:
-        result = await osint_service.check_password_pwned(request.password)
+        result = await osint_service.check_password_pwned(payload.password)
         return result
     except Exception as e:
         raise _safe_error(e, "password check")
@@ -165,25 +165,25 @@ async def check_password_exposure(request: PasswordCheckRequest, req: Request):
 
 @router.post("/audit/full", response_model=AuditResult)
 @limiter.limit("5/minute")
-async def run_full_audit_endpoint(request: FullAuditRequest, req: Request):
+async def run_full_audit_endpoint(payload: FullAuditRequest, request: Request):
     """
     Run comprehensive security audit on an email.
     Checks breaches, password exposure, OSINT, and generates AI analysis.
     """
     try:
-        return await run_full_audit(request)
+        return await run_full_audit(payload)
     except Exception as e:
         raise _safe_error(e, "full audit")
 
 
 @router.post("/audit/multi", response_model=AuditResult)
 @limiter.limit("5/minute")
-async def run_multi_audit_endpoint(request: MultiAuditRequest, req: Request):
+async def run_multi_audit_endpoint(payload: MultiAuditRequest, request: Request):
     """
     Run audit on different data types: username, phone, domain, name, or IP.
     """
     try:
-        return await run_multi_audit(request)
+        return await run_multi_audit(payload)
     except HTTPException:
         raise
     except Exception as e:
@@ -306,16 +306,16 @@ async def ai_chat(message: str):
 
 @router.post("/events/track", response_model=EventTrackResponse)
 @limiter.limit("120/minute")
-async def track_event_endpoint(request: EventTrackRequest, req: Request):
+async def track_event_endpoint(payload: EventTrackRequest, request: Request):
     """Track product and growth events for automation pipelines."""
     try:
         tracked = event_store.track_event(
             db_path=settings.EVENT_DB_PATH,
-            event_type=request.event_type,
-            payload=request.payload,
-            user_id=request.user_id,
-            session_id=request.session_id,
-            source=request.source,
+            event_type=payload.event_type,
+            payload=payload.payload,
+            user_id=payload.user_id,
+            session_id=payload.session_id,
+            source=payload.source,
         )
         return EventTrackResponse(event_id=tracked["id"], status="tracked")
     except Exception as e:
@@ -324,35 +324,35 @@ async def track_event_endpoint(request: EventTrackRequest, req: Request):
 
 @router.post("/contact/lead", response_model=LeadCreateResponse)
 @limiter.limit("20/hour")
-async def create_contact_lead(request: ContactLeadRequest, req: Request):
+async def create_contact_lead(payload: ContactLeadRequest, request: Request):
     """Store contact leads and optionally send notification email."""
     try:
         lead = event_store.create_lead(
             db_path=settings.EVENT_DB_PATH,
-            name=request.name,
-            email=request.email,
-            subject=request.subject,
-            message=request.message,
-            source=request.source,
-            metadata={"ip": get_remote_address(req)},
+            name=payload.name,
+            email=payload.email,
+            subject=payload.subject,
+            message=payload.message,
+            source=payload.source,
+            metadata={"ip": get_remote_address(request)},
         )
         event_store.track_event(
             db_path=settings.EVENT_DB_PATH,
             event_type="lead_created",
             user_id=None,
             session_id=None,
-            source=request.source,
+            source=payload.source,
             payload={
                 "lead_id": lead["id"],
-                "subject": request.subject,
-                "email_domain": str(request.email).split("@")[-1],
+                "subject": payload.subject,
+                "email_domain": str(payload.email).split("@")[-1],
             },
         )
         await email_service.send_new_lead_notification(
-            name=request.name,
-            email=str(request.email),
-            subject=request.subject,
-            message=request.message,
+            name=payload.name,
+            email=str(payload.email),
+            subject=payload.subject,
+            message=payload.message,
         )
         return LeadCreateResponse(lead_id=lead["id"], status="created")
     except Exception as e:
