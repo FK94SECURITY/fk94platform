@@ -115,14 +115,14 @@ export default function AuditPage() {
         setProgressStep(prev => Math.min(prev + 1, progressSteps.length - 1));
       }, interval);
 
-      // Timeout: if loading takes more than 120s, show error
+      // Timeout: if loading takes too long, show error and let user retry.
       const timeout = setTimeout(() => {
         setError(language === 'es'
           ? 'El escaneo tardó demasiado. Por favor intentá de nuevo.'
           : 'The scan timed out. Please try again.');
         toast.error(language === 'es' ? 'Timeout del escaneo' : 'Scan timed out');
         setStep('input');
-      }, 120000);
+      }, 240000);
 
       return () => {
         if (progressTimer.current) clearInterval(progressTimer.current);
@@ -181,14 +181,18 @@ export default function AuditPage() {
       return;
     }
 
-    // Check if user can perform audit (if logged in)
+    // Check quota for logged users, but don't block scans on transient profile issues.
     if (user && isConfigured) {
-      const canAudit = await canPerformAudit(user.id);
-      if (!canAudit) {
-        setError(language === 'es'
-          ? 'Alcanzaste el límite de escaneos gratuitos. Upgrade a Pro para escaneos ilimitados.'
-          : 'You reached your free scan limit. Upgrade to Pro for unlimited scans.');
-        return;
+      try {
+        const canAudit = await canPerformAudit(user.id);
+        if (!canAudit) {
+          setError(language === 'es'
+            ? 'Alcanzaste el límite de escaneos gratuitos. Upgrade a Pro para escaneos ilimitados.'
+            : 'You reached your free scan limit. Upgrade to Pro for unlimited scans.');
+          return;
+        }
+      } catch {
+        // Continue with scan if quota check is temporarily unavailable.
       }
     }
 

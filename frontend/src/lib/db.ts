@@ -125,7 +125,10 @@ export async function canPerformAudit(userId: string): Promise<boolean> {
   if (!isSupabaseConfigured) return true // Allow if not configured
 
   const profile = await getProfile(userId)
-  if (!profile) return false
+  if (!profile) {
+    // Fail open on transient profile read issues to avoid blocking scans.
+    return true
+  }
 
   // Pro users have unlimited
   if (profile.plan === 'pro' || profile.plan === 'enterprise') {
