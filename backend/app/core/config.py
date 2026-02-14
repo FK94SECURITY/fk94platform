@@ -26,6 +26,19 @@ class Settings(BaseSettings):
     STRIPE_PUBLISHABLE_KEY: str = ""
     STRIPE_WEBHOOK_SECRET: str = ""
 
+    # Supabase admin (backend side)
+    SUPABASE_URL: str = ""
+    SUPABASE_SERVICE_ROLE_KEY: str = ""
+
+    # Email provider (optional, for lead notifications)
+    RESEND_API_KEY: str = ""
+    CONTACT_EMAIL_TO: str = "contact@fk94security.com"
+
+    # OpenClaw (optional, required for managed orchestration)
+    OPENCLAW_API_URL: str = ""
+    OPENCLAW_API_KEY: str = ""
+    OPENCLAW_PROJECT_ID: str = ""
+
     # OSINT APIs
     HIBP_API_KEY: str = ""  # Have I Been Pwned - set via HIBP_API_KEY env var
     DEHASHED_API_KEY: str = ""
@@ -52,6 +65,7 @@ class Settings(BaseSettings):
     JOB_DB_PATH: str = "jobs.sqlite3"
     JOB_WORKER_POLL_SECONDS: int = 5
     ENABLE_JOB_WORKER: bool = True
+    EVENT_DB_PATH: str = "events.sqlite3"
 
     # CORS
     CORS_ORIGINS: list = [

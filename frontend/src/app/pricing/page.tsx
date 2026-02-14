@@ -5,20 +5,23 @@ import Link from 'next/link'
 import { toast } from 'sonner'
 import Navbar from '@/components/Navbar'
 import Footer from '@/components/Footer'
+import AuthModal from '@/components/AuthModal'
 import { useLanguage } from '@/i18n'
 import { useAuth } from '@/contexts/AuthContext'
 import { redirectToCheckout } from '@/lib/stripe'
+import { trackEvent } from '@/lib/api'
 
 export default function PricingPage() {
   const { language } = useLanguage()
   const { user } = useAuth()
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  const [showAuthModal, setShowAuthModal] = useState(false)
 
   const handleSubscribe = async () => {
     if (!user) {
-      // Redirect to login with return URL
-      window.location.href = '/login?redirect=/pricing'
+      setShowAuthModal(true)
+      trackEvent({ event_type: 'checkout_auth_required', payload: { source: 'pricing' } })
       return
     }
 
@@ -26,6 +29,11 @@ export default function PricingPage() {
     setError(null)
 
     try {
+      await trackEvent({
+        event_type: 'checkout_started',
+        user_id: user.id,
+        payload: { plan: 'pro', price: 10, source: 'pricing' },
+      })
       await redirectToCheckout(user.email || '', user.id)
     } catch {
       const errorMsg = language === 'es'
@@ -33,6 +41,13 @@ export default function PricingPage() {
         : 'Error processing payment. Please try again.'
       setError(errorMsg)
       toast.error(errorMsg)
+      if (user) {
+        trackEvent({
+          event_type: 'checkout_failed',
+          user_id: user.id,
+          payload: { plan: 'pro', source: 'pricing' },
+        })
+      }
       setLoading(false)
     }
   }
@@ -43,12 +58,14 @@ export default function PricingPage() {
     'Soporte Mac, Windows y Linux',
     'Seguimiento de progreso',
     'Sin cuenta requerida',
+    'Sin riesgo de cobro accidental',
   ] : [
     'Full OPSEC Checklist (54 items)',
     'Hardening script generator',
     'Mac, Windows & Linux support',
     'Progress tracking',
     'No account required',
+    'No accidental billing risk',
   ]
 
   const proFeatures = language === 'es' ? [
@@ -62,6 +79,7 @@ export default function PricingPage() {
     'Monitoreo de dark web',
     'Reportes PDF descargables',
     'Escaneos ilimitados',
+    'Prioridad en soporte por email',
   ] : [
     'Everything in Free',
     'Email breach scanning',
@@ -73,6 +91,21 @@ export default function PricingPage() {
     'Dark web monitoring',
     'Downloadable PDF reports',
     'Unlimited scans',
+    'Priority email support',
+  ]
+
+  const conciergeFeatures = language === 'es' ? [
+    'Todo lo de Pro',
+    'Implementación 1:1',
+    'Hardening guiado por experto',
+    'Playbook de respuesta a incidentes',
+    'Plan de privacidad personalizado',
+  ] : [
+    'Everything in Pro',
+    '1:1 implementation',
+    'Expert-guided hardening',
+    'Incident response playbook',
+    'Custom privacy plan',
   ]
 
   const faqs = language === 'es' ? [
@@ -141,7 +174,7 @@ export default function PricingPage() {
         {/* Pricing Cards */}
         <section className="py-20">
           <div className="max-w-4xl mx-auto px-4">
-            <div className="grid md:grid-cols-2 gap-8">
+            <div className="grid md:grid-cols-3 gap-8">
               {/* Free */}
               <div className="bg-zinc-900 border border-zinc-800 rounded-2xl p-8">
                 <h3 className="text-2xl font-semibold mb-2">
@@ -206,6 +239,37 @@ export default function PricingPage() {
                 {error && (
                   <p className="mt-2 text-red-400 text-sm text-center">{error}</p>
                 )}
+              </div>
+
+              {/* Concierge */}
+              <div className="bg-zinc-900 border border-purple-500/40 rounded-2xl p-8">
+                <h3 className="text-2xl font-semibold mb-2">
+                  {language === 'es' ? 'Concierge' : 'Concierge'}
+                </h3>
+                <p className="text-zinc-400 mb-6">
+                  {language === 'es' ? 'Para alto riesgo y equipos críticos' : 'For high-risk individuals and critical teams'}
+                </p>
+                <div className="mb-8">
+                  <span className="text-4xl font-bold">
+                    {language === 'es' ? 'Desde $800' : 'From $800'}
+                  </span>
+                </div>
+                <ul className="space-y-4 mb-8">
+                  {conciergeFeatures.map((feature, i) => (
+                    <li key={i} className="flex items-center gap-3 text-zinc-300">
+                      <svg className="w-5 h-5 text-purple-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                      </svg>
+                      {feature}
+                    </li>
+                  ))}
+                </ul>
+                <Link
+                  href="/contact"
+                  className="block text-center py-3 bg-purple-600 hover:bg-purple-500 rounded-xl font-medium transition"
+                >
+                  {language === 'es' ? 'Agendar Diagnóstico' : 'Book Assessment'}
+                </Link>
               </div>
             </div>
           </div>
@@ -314,6 +378,7 @@ export default function PricingPage() {
       </main>
 
       <Footer />
+      <AuthModal isOpen={showAuthModal} onClose={() => setShowAuthModal(false)} />
     </>
   )
 }

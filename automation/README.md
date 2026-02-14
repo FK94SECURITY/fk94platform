@@ -1,5 +1,29 @@
 # FK94 Automation
 
+## OpenClaw Autonomous Stack (New)
+Architecture and deploy docs for autonomous growth + SaaS + consulting:
+- `OPENCLAW_DEPLOY_PLAN.md` - full business/agent architecture
+- `agent_topology.yaml` - agent graph, schedules, triggers, pipelines
+- `openclaw.env.example` - required credentials/env vars template
+- `OPENCLAW_DEPLOY_CHECKLIST.md` - step-by-step deployment checklist
+- `openclaw_runner.py` - runtime loop (event polling + pipeline actions)
+
+Run locally:
+```bash
+pip install -r requirements.txt
+python3 openclaw_runner.py --once
+python3 openclaw_runner.py --daemon --interval 300
+```
+
+Deploy helpers:
+```bash
+# Validate environment + API readiness
+python3 preflight.py
+
+# One-command deploy helper
+./deploy_openclaw.sh
+```
+
 ## Content Manager (Rasperito - Legacy)
 Social media posting scripts. These handle automated content publishing to Twitter/LinkedIn.
 - `poster.py` - API-based poster

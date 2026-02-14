@@ -14,6 +14,7 @@ from slowapi.errors import RateLimitExceeded
 from app.core.config import settings
 from app.api.routes import router
 from app.services import job_store
+from app.services import event_store
 from app.services.job_worker import job_worker
 
 logger = logging.getLogger(__name__)
@@ -26,6 +27,7 @@ async def lifespan(app: FastAPI):
     """Startup and shutdown events"""
     # Startup
     job_store.init_db(settings.JOB_DB_PATH)
+    event_store.init_db(settings.EVENT_DB_PATH)
     if settings.ENABLE_JOB_WORKER:
         await job_worker.start()
     logger.info(f"Starting {settings.APP_NAME}")

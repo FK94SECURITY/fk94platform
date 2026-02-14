@@ -7,6 +7,7 @@ import stripe
 from collections import OrderedDict
 from typing import Optional
 from app.core.config import settings
+from app.services.supabase_admin_service import supabase_admin_service
 
 logger = logging.getLogger(__name__)
 
@@ -167,6 +168,8 @@ class StripeService:
 
         event_type = event.get("type", "")
         data = event.get("data", {}).get("object", {})
+        metadata = data.get("metadata", {}) or {}
+        user_id_from_metadata = metadata.get("user_id") or data.get("client_reference_id")
 
         result = {"event": event_type, "handled": False}
 
@@ -179,6 +182,13 @@ class StripeService:
             result["customer_id"] = customer_id
             result["action"] = "upgrade_to_pro"
             result["handled"] = True
+            if user_id:
+                updated = await supabase_admin_service.update_profile_plan(
+                    user_id=user_id,
+                    plan="pro",
+                    audits_remaining=999999,
+                )
+                result["profile_updated"] = updated
 
         elif event_type == "customer.subscription.deleted":
             # Subscription cancelled
@@ -186,6 +196,13 @@ class StripeService:
             result["customer_id"] = customer_id
             result["action"] = "downgrade_to_free"
             result["handled"] = True
+            if user_id_from_metadata:
+                updated = await supabase_admin_service.update_profile_plan(
+                    user_id=user_id_from_metadata,
+                    plan="free",
+                    audits_remaining=5,
+                )
+                result["profile_updated"] = updated
 
         elif event_type == "customer.subscription.updated":
             # Subscription updated (could be upgrade/downgrade/payment issue)
@@ -195,6 +212,13 @@ class StripeService:
             result["status"] = status
             if status == "active":
                 result["action"] = "subscription_active"
+                if user_id_from_metadata:
+                    updated = await supabase_admin_service.update_profile_plan(
+                        user_id=user_id_from_metadata,
+                        plan="pro",
+                        audits_remaining=999999,
+                    )
+                    result["profile_updated"] = updated
             elif status in ["past_due", "unpaid"]:
                 result["action"] = "payment_failed"
             result["handled"] = True

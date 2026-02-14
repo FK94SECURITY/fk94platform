@@ -13,6 +13,7 @@ import {
   getScriptInstructions,
   OS,
 } from '@/data/hardening-config';
+import { trackEvent } from '@/lib/api';
 
 type Step = 'questions' | 'generating' | 'result';
 
@@ -118,6 +119,11 @@ export default function HardenPage() {
         const script = generateScript(newAnswers);
         setGeneratedScript(script);
         setStep('result');
+        trackEvent({
+          event_type: 'script_generated',
+          payload: { os: newAnswers.os || 'unknown', risk_level: newAnswers.risk_level || 'unknown' },
+          source: 'harden_page',
+        });
       }, 1500);
     }
   };

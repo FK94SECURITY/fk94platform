@@ -33,7 +33,8 @@ from app.models.schemas import (
     NameCheckRequest, IPCheckRequest, WalletCheckRequest, MultiAuditRequest, AuditType,
     BreachCheckResult, PasswordExposure, AuditResult, AIResponse, SecurityScore,
     UsernameResult, PhoneResult, DomainResult, NameResult, IPResult, WalletResult,
-    FullAuditJobRequest, MultiAuditJobRequest, JobCreateResponse, JobInfo, JobStatus
+    FullAuditJobRequest, MultiAuditJobRequest, JobCreateResponse, JobInfo, JobStatus,
+    ContactLeadRequest, LeadCreateResponse, EventTrackRequest, EventTrackResponse
 )
 from app.core.config import settings
 from app.services.osint_service import osint_service
@@ -42,6 +43,8 @@ from app.services.scoring_service import scoring_service
 from app.services.pdf_service import pdf_service
 from app.services.audit_runner import run_full_audit, run_multi_audit
 from app.services import job_store
+from app.services import event_store
+from app.services.email_service import email_service
 from app.services.multi_audit_service import (
     check_username, check_phone, check_domain, check_name, check_ip, check_wallet
 )
@@ -299,6 +302,92 @@ async def ai_chat(message: str):
         raise _safe_error(e, "AI chat")
 
 
+# === GROWTH AUTOMATION (EVENTS + LEADS) ===
+
+@router.post("/events/track", response_model=EventTrackResponse)
+@limiter.limit("120/minute")
+async def track_event_endpoint(request: EventTrackRequest, req: Request):
+    """Track product and growth events for automation pipelines."""
+    try:
+        tracked = event_store.track_event(
+            db_path=settings.EVENT_DB_PATH,
+            event_type=request.event_type,
+            payload=request.payload,
+            user_id=request.user_id,
+            session_id=request.session_id,
+            source=request.source,
+        )
+        return EventTrackResponse(event_id=tracked["id"], status="tracked")
+    except Exception as e:
+        raise _safe_error(e, "event tracking")
+
+
+@router.post("/contact/lead", response_model=LeadCreateResponse)
+@limiter.limit("20/hour")
+async def create_contact_lead(request: ContactLeadRequest, req: Request):
+    """Store contact leads and optionally send notification email."""
+    try:
+        lead = event_store.create_lead(
+            db_path=settings.EVENT_DB_PATH,
+            name=request.name,
+            email=request.email,
+            subject=request.subject,
+            message=request.message,
+            source=request.source,
+            metadata={"ip": get_remote_address(req)},
+        )
+        event_store.track_event(
+            db_path=settings.EVENT_DB_PATH,
+            event_type="lead_created",
+            user_id=None,
+            session_id=None,
+            source=request.source,
+            payload={
+                "lead_id": lead["id"],
+                "subject": request.subject,
+                "email_domain": str(request.email).split("@")[-1],
+            },
+        )
+        await email_service.send_new_lead_notification(
+            name=request.name,
+            email=str(request.email),
+            subject=request.subject,
+            message=request.message,
+        )
+        return LeadCreateResponse(lead_id=lead["id"], status="created")
+    except Exception as e:
+        raise _safe_error(e, "lead capture")
+
+
+@router.get("/events/stats")
+async def events_stats():
+    """Basic event counters for quick observability."""
+    try:
+        return {
+            "total_events": event_store.count_events(settings.EVENT_DB_PATH),
+            "scan_completed": event_store.count_events(settings.EVENT_DB_PATH, "scan_completed"),
+            "checkout_started": event_store.count_events(settings.EVENT_DB_PATH, "checkout_started"),
+            "checkout_success": event_store.count_events(settings.EVENT_DB_PATH, "checkout_success"),
+        }
+    except Exception as e:
+        raise _safe_error(e, "events stats")
+
+
+@router.get("/automation/preflight")
+async def automation_preflight_status():
+    """Return credential/config readiness for autonomous mode."""
+    try:
+        return {
+            "api_health": "ok",
+            "supabase_admin_configured": bool(settings.SUPABASE_URL and settings.SUPABASE_SERVICE_ROLE_KEY),
+            "stripe_webhook_configured": bool(settings.STRIPE_WEBHOOK_SECRET),
+            "email_configured": bool(settings.RESEND_API_KEY),
+            "openclaw_configured": bool(settings.OPENCLAW_API_URL and settings.OPENCLAW_API_KEY and settings.OPENCLAW_PROJECT_ID),
+        }
+    except Exception as e:
+        raise _safe_error(e, "automation preflight")
+
+
 # === HEALTH & STATUS ===
 
 @router.get("/health")
@@ -501,6 +590,25 @@ async def stripe_webhook(request: Request):
 
     if "error" in result:
         raise HTTPException(status_code=400, detail=result["error"])
+
+    # Mirror key billing lifecycle events into event store for automation.
+    action = result.get("action", "")
+    mapped_event = None
+    if action == "upgrade_to_pro":
+        mapped_event = "checkout_success"
+    elif action == "payment_failed":
+        mapped_event = "payment_failed"
+    elif action == "downgrade_to_free":
+        mapped_event = "subscription_canceled"
+
+    if mapped_event:
+        event_store.track_event(
+            db_path=settings.EVENT_DB_PATH,
+            event_type=mapped_event,
+            user_id=result.get("user_id"),
+            source="stripe_webhook",
+            payload=result,
+        )
 
     return result
 

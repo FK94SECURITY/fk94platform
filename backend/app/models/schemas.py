@@ -212,6 +212,46 @@ class AIAnalysisRequest(BaseModel):
         return v
 
 
+class ContactLeadRequest(BaseModel):
+    name: str
+    email: EmailStr
+    subject: str
+    message: str
+    source: str = "website_contact"
+
+    @field_validator("name", "subject")
+    @classmethod
+    def validate_short_text(cls, v: str) -> str:
+        v = v.strip()
+        if not v or len(v) > 120:
+            raise ValueError("Field must be 1-120 characters")
+        return v
+
+    @field_validator("message")
+    @classmethod
+    def validate_message(cls, v: str) -> str:
+        v = v.strip()
+        if not v or len(v) > 5000:
+            raise ValueError("Message must be 1-5000 characters")
+        return v
+
+
+class EventTrackRequest(BaseModel):
+    event_type: str
+    payload: dict = {}
+    user_id: Optional[str] = None
+    session_id: Optional[str] = None
+    source: str = "frontend"
+
+    @field_validator("event_type")
+    @classmethod
+    def validate_event_type(cls, v: str) -> str:
+        v = v.strip().lower()
+        if not re.match(r"^[a-z0-9_]{3,64}$", v):
+            raise ValueError("Invalid event_type format")
+        return v
+
+
 # === Response Models ===
 
 class BreachInfo(BaseModel):
@@ -368,6 +408,16 @@ class AuditResult(BaseModel):
 class AIResponse(BaseModel):
     response: str
     recommendations: list[str] = []
+
+
+class LeadCreateResponse(BaseModel):
+    lead_id: str
+    status: str
+
+
+class EventTrackResponse(BaseModel):
+    event_id: str
+    status: str
 
 
 # === Automation ===

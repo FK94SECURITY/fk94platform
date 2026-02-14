@@ -34,6 +34,9 @@ PYTHON=/home/pi/fk94/automation/venv/bin/python3
 # Health check: every 5 minutes 8am-10pm
 */5 8-22 * * * cd $PROJECT && $PYTHON alert.py >> logs/alert.log 2>&1
 
+# OpenClaw autonomy runner: every 10 minutes
+*/10 * * * * cd $PROJECT && ENABLE_AUTONOMY=true AUTONOMY_MODE=guarded $PYTHON openclaw_runner.py --once >> logs/openclaw_runner.log 2>&1
+
 # --- Cleanup ---
 # Rotate logs: 1st of each month
 0 0 1 * * find $PROJECT/logs -name "*.log" -size +10M -exec truncate -s 0 {} \;

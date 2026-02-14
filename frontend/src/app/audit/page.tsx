@@ -11,7 +11,7 @@ import SecurityScoreDisplay from '@/components/SecurityScore';
 import AIChat from '@/components/AIChat';
 import {
   runFullAudit, runMultiAudit, downloadReport,
-  AuditResult, AuditType, getRiskLevel
+  AuditResult, AuditType, getRiskLevel, trackEvent
 } from '@/lib/api';
 import { saveAudit, canPerformAudit, getProfile } from '@/lib/db';
 
@@ -110,7 +110,6 @@ export default function AuditPage() {
 
   useEffect(() => {
     if (step === 'loading') {
-      setProgressStep(0);
       const interval = auditType === 'email' ? 4000 : 3000;
       progressTimer.current = setInterval(() => {
         setProgressStep(prev => Math.min(prev + 1, progressSteps.length - 1));
@@ -194,7 +193,14 @@ export default function AuditPage() {
     }
 
     setStep('loading');
+    setProgressStep(0);
     setError(null);
+    trackEvent({
+      event_type: 'scan_started',
+      user_id: user?.id,
+      payload: { audit_type: auditType },
+      source: 'audit_page',
+    });
 
     try {
       let result: AuditResult;
@@ -205,6 +211,16 @@ export default function AuditPage() {
       }
       setAuditResult(result);
       setStep('results');
+      trackEvent({
+        event_type: 'scan_completed',
+        user_id: user?.id,
+        payload: {
+          audit_type: auditType,
+          risk_level: result.security_score.risk_level,
+          score: result.security_score.score,
+        },
+        source: 'audit_page',
+      });
 
       // Save to database if user is logged in
       if (user && isConfigured) {
@@ -246,6 +262,12 @@ export default function AuditPage() {
       setError(errorMsg);
       toast.error(errorMsg);
       setStep('input');
+      trackEvent({
+        event_type: 'scan_failed',
+        user_id: user?.id,
+        payload: { audit_type: auditType },
+        source: 'audit_page',
+      });
     }
   };
 
@@ -262,6 +284,12 @@ export default function AuditPage() {
       a.click();
       window.URL.revokeObjectURL(url);
       document.body.removeChild(a);
+      trackEvent({
+        event_type: 'report_downloaded',
+        user_id: user?.id,
+        payload: { audit_type: auditResult.audit_type },
+        source: 'audit_page',
+      });
     } catch {
       toast.error(language === 'es' ? 'Error generando reporte PDF' : 'Error generating PDF report');
     }

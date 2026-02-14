@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import Navbar from '@/components/Navbar'
 import Footer from '@/components/Footer'
+import { submitContactLead, trackEvent } from '@/lib/api'
 
 export default function ContactPage() {
   const [formData, setFormData] = useState({
@@ -12,12 +13,26 @@ export default function ContactPage() {
     message: ''
   })
   const [submitted, setSubmitted] = useState(false)
+  const [submitting, setSubmitting] = useState(false)
+  const [error, setError] = useState('')
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    // TODO: Integrate with backend API
-    console.log('Form submitted:', formData)
-    setSubmitted(true)
+    setSubmitting(true)
+    setError('')
+    try {
+      await submitContactLead(formData)
+      await trackEvent({
+        event_type: 'consulting_interest',
+        payload: { subject: formData.subject, email_domain: formData.email.split('@')[1] || '' },
+        source: 'contact_page',
+      })
+      setSubmitted(true)
+    } catch {
+      setError('Could not send message. Please try again in a moment.')
+    } finally {
+      setSubmitting(false)
+    }
   }
 
   return (
@@ -169,11 +184,16 @@ export default function ContactPage() {
                       />
                     </div>
 
+                    {error && (
+                      <p className="text-red-400 text-sm">{error}</p>
+                    )}
+
                     <button
                       type="submit"
-                      className="w-full bg-emerald-600 hover:bg-emerald-500 py-3 rounded-lg font-medium transition"
+                      disabled={submitting}
+                      className="w-full bg-emerald-600 hover:bg-emerald-500 py-3 rounded-lg font-medium transition disabled:opacity-50 disabled:cursor-not-allowed"
                     >
-                      Send Message
+                      {submitting ? 'Sending...' : 'Send Message'}
                     </button>
                   </form>
                 )}

@@ -6,7 +6,108 @@ import Footer from '@/components/Footer'
 import { useLanguage } from '@/i18n'
 
 export default function Home() {
-  const { t } = useLanguage()
+  const { t, language } = useLanguage()
+  const isEs = language === 'es'
+
+  const whyProItems = isEs
+    ? [
+        {
+          title: 'Monitoreo continuo',
+          description: 'No es un chequeo único. Detecta cambios nuevos y te avisa automáticamente.',
+          icon: '⏱️',
+        },
+        {
+          title: 'Todo en un solo panel',
+          description: 'Breaches, wallet, dominio, teléfono y username sin saltar entre herramientas.',
+          icon: '📊',
+        },
+        {
+          title: 'Priorización accionable',
+          description: 'Te mostramos qué corregir primero para bajar riesgo real, no ruido.',
+          icon: '🎯',
+        },
+        {
+          title: 'Historial y reportes',
+          description: 'Seguimiento de evolución y reportes listos para decisiones de negocio.',
+          icon: '🧾',
+        },
+      ]
+    : [
+        {
+          title: 'Continuous monitoring',
+          description: 'Not a one-time check. It detects new exposure and alerts you automatically.',
+          icon: '⏱️',
+        },
+        {
+          title: 'Everything in one dashboard',
+          description: 'Breaches, wallet, domain, phone, and username in one place.',
+          icon: '📊',
+        },
+        {
+          title: 'Actionable prioritization',
+          description: 'We show what to fix first to reduce real risk, not noise.',
+          icon: '🎯',
+        },
+        {
+          title: 'History and reports',
+          description: 'Track risk evolution and export reports for team decisions.',
+          icon: '🧾',
+        },
+      ]
+
+  const modelCards = isEs
+    ? [
+        {
+          badge: 'GRATIS',
+          title: 'DIY Security',
+          description: 'Checklist + hardening para quien quiere hacerlo por su cuenta.',
+          cta: 'Empezar Gratis',
+          href: '/checklist',
+          className: 'border-zinc-800',
+        },
+        {
+          badge: 'PRO',
+          title: 'Monitoreo SaaS',
+          description: 'Escaneos + alertas + historial para mantener seguridad activa mes a mes.',
+          cta: 'Ver Plan Pro',
+          href: '/pricing',
+          className: 'border-emerald-500/60',
+        },
+        {
+          badge: 'CONCIERGE',
+          title: 'Consultoría Premium',
+          description: 'Para casos de alto riesgo: implementación 1:1 y plan personalizado.',
+          cta: 'Contactar Equipo',
+          href: '/contact',
+          className: 'border-purple-500/40',
+        },
+      ]
+    : [
+        {
+          badge: 'FREE',
+          title: 'DIY Security',
+          description: 'Checklist + hardening for users who want to do it themselves.',
+          cta: 'Start Free',
+          href: '/checklist',
+          className: 'border-zinc-800',
+        },
+        {
+          badge: 'PRO',
+          title: 'SaaS Monitoring',
+          description: 'Scans + alerts + history to keep your security active month after month.',
+          cta: 'View Pro Plan',
+          href: '/pricing',
+          className: 'border-emerald-500/60',
+        },
+        {
+          badge: 'CONCIERGE',
+          title: 'Premium Consulting',
+          description: 'For high-risk cases: 1:1 implementation and custom protection plan.',
+          cta: 'Contact Team',
+          href: '/contact',
+          className: 'border-purple-500/40',
+        },
+      ]
 
   return (
     <>
@@ -43,6 +144,31 @@ export default function Home() {
             >
               {t.hero.cta.scan}
             </Link>
+          </div>
+        </div>
+      </section>
+
+      {/* Why Pro Section */}
+      <section className="py-24 border-b border-zinc-800">
+        <div className="max-w-6xl mx-auto px-4">
+          <div className="text-center mb-14">
+            <h2 className="text-4xl font-bold mb-4">
+              {isEs ? 'Por qué pagar Pro' : 'Why Pay for Pro'}
+            </h2>
+            <p className="text-zinc-400 max-w-2xl mx-auto">
+              {isEs
+                ? 'Lo gratuito sirve para empezar. Pro sirve para mantenerte protegido sin perder tiempo.'
+                : 'Free tools help you start. Pro keeps you protected without wasting time.'}
+            </p>
+          </div>
+          <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
+            {whyProItems.map((item) => (
+              <div key={item.title} className="bg-zinc-900/40 border border-zinc-800 rounded-xl p-6">
+                <div className="text-2xl mb-3">{item.icon}</div>
+                <h3 className="font-semibold mb-2">{item.title}</h3>
+                <p className="text-zinc-500 text-sm">{item.description}</p>
+              </div>
+            ))}
           </div>
         </div>
       </section>
@@ -314,6 +440,39 @@ export default function Home() {
                 {t.pricing.pro.cta}
               </Link>
             </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Business Model Section */}
+      <section className="py-24">
+        <div className="max-w-6xl mx-auto px-4">
+          <div className="text-center mb-14">
+            <h2 className="text-4xl font-bold mb-4">
+              {isEs ? 'Un modelo para cada necesidad' : 'A model for every need'}
+            </h2>
+            <p className="text-zinc-400 max-w-2xl mx-auto">
+              {isEs
+                ? 'Entrás gratis, escalás a monitoreo y subís a consultoría solo si realmente lo necesitás.'
+                : 'Start free, upgrade to monitoring, and move to consulting only when needed.'}
+            </p>
+          </div>
+          <div className="grid md:grid-cols-3 gap-6">
+            {modelCards.map((card) => (
+              <div key={card.title} className={`bg-zinc-900 border rounded-2xl p-7 ${card.className}`}>
+                <span className="inline-block text-xs font-semibold px-2.5 py-1 rounded-full bg-zinc-800 mb-4">
+                  {card.badge}
+                </span>
+                <h3 className="text-2xl font-semibold mb-2">{card.title}</h3>
+                <p className="text-zinc-400 mb-6">{card.description}</p>
+                <Link
+                  href={card.href}
+                  className="inline-block bg-zinc-800 hover:bg-zinc-700 px-5 py-2.5 rounded-lg font-medium transition"
+                >
+                  {card.cta}
+                </Link>
+              </div>
+            ))}
           </div>
         </div>
       </section>

@@ -157,6 +157,22 @@ export interface AIResponse {
   recommendations: string[];
 }
 
+export interface EventTrackPayload {
+  event_type: string;
+  payload?: Record<string, unknown>;
+  user_id?: string;
+  session_id?: string;
+  source?: string;
+}
+
+export interface ContactLeadPayload {
+  name: string;
+  email: string;
+  subject: string;
+  message: string;
+  source?: string;
+}
+
 // === Retry Helper ===
 
 async function fetchWithRetry(
@@ -347,6 +363,38 @@ export async function downloadReport(email: string): Promise<Blob> {
   }
 
   return response.blob();
+}
+
+export async function trackEvent(payload: EventTrackPayload): Promise<void> {
+  try {
+    await fetch(`${API_BASE}/events/track`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        source: 'frontend',
+        ...payload,
+      }),
+    });
+  } catch {
+    // Silent failure by design; tracking should never block UX
+  }
+}
+
+export async function submitContactLead(payload: ContactLeadPayload): Promise<{ lead_id: string; status: string }> {
+  const response = await fetchWithRetry(`${API_BASE}/contact/lead`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      source: 'website_contact',
+      ...payload,
+    }),
+  });
+
+  if (!response.ok) {
+    throw new Error('Failed to submit lead');
+  }
+
+  return response.json();
 }
 
 export function getRiskLevel(score: SecurityScore): string {

@@ -38,3 +38,4 @@ build/
 browser_sessions/
 .env.production
 .vercel
+PARA_CODEX.txt

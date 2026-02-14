@@ -5,6 +5,7 @@ import { useRouter, usePathname } from 'next/navigation'
 import { toast } from 'sonner'
 import { supabase, isSupabaseConfigured } from '@/lib/supabase'
 import { User, Session } from '@supabase/supabase-js'
+import { trackEvent } from '@/lib/api'
 
 const PROTECTED_ROUTES = ['/dashboard', '/audit']
 
@@ -78,6 +79,13 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       return { error: new Error('Authentication not configured') }
     }
     const { error } = await supabase.auth.signInWithPassword({ email, password })
+    if (!error) {
+      trackEvent({
+        event_type: 'signin_completed',
+        payload: { email_domain: email.split('@')[1] || '' },
+        source: 'auth',
+      })
+    }
     return { error }
   }
 
@@ -93,6 +101,13 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       password,
       options: { emailRedirectTo: redirectTo }
     })
+    if (!error) {
+      trackEvent({
+        event_type: 'signup_completed',
+        payload: { email_domain: email.split('@')[1] || '' },
+        source: 'auth',
+      })
+    }
     return { error }
   }
 

@@ -1,0 +1,156 @@
+version: 1
+project: fk94-autonomous-growth
+mode: guarded
+
+global:
+  timezone: America/Argentina/Buenos_Aires
+  max_parallel_agents: 6
+  default_timeout_sec: 180
+  guardrails:
+    daily_spend_cap_usd: 300
+    max_messages_per_lead_per_day: 2
+    auto_pause_on_conversion_drop: true
+    min_conversion_rate: 0.01
+
+event_bus:
+  required_events:
+    - signup_started
+    - signup_completed
+    - checkout_started
+    - checkout_success
+    - checkout_failed
+    - scan_started
+    - scan_completed
+    - report_downloaded
+    - consulting_interest
+    - subscription_canceled
+    - payment_failed
+
+agents:
+  - id: orchestrator
+    role: master_planner
+    model: kimi-k2.5
+    schedule: "0 */6 * * *"
+    inputs:
+      - mrr_snapshot
+      - churn_snapshot
+      - conversion_snapshot
+      - campaign_performance
+    outputs:
+      - execution_plan
+      - budget_allocations
+      - priority_queue
+
+  - id: acquisition
+    role: traffic_growth
+    model: kimi-k2.5
+    schedule: "0 */4 * * *"
+    inputs:
+      - seo_keywords
+      - top_pages
+      - offer_catalog
+    outputs:
+      - campaign_tasks
+      - referral_tasks
+      - seo_backlog
+
+  - id: content
+    role: content_factory
+    model: kimi-k2.5
+    schedule: "0 10,18 * * *"
+    inputs:
+      - rss_articles
+      - campaign_tasks
+      - product_updates
+    outputs:
+      - social_posts
+      - email_sequences
+      - landing_variants
+
+  - id: lead_qualifier
+    role: lead_scoring_router
+    model: kimi-k2.5
+    trigger_events:
+      - signup_completed
+      - scan_completed
+      - consulting_interest
+      - checkout_started
+    outputs:
+      - lead_score
+      - segment
+      - next_best_action
+
+  - id: sales_closer
+    role: conversion_agent
+    model: kimi-k2.5
+    trigger_events:
+      - lead_scored
+      - checkout_failed
+      - consulting_recommended
+    outputs:
+      - followup_messages
+      - booking_links
+      - proposal_drafts
+
+  - id: customer_success
+    role: activation_retention
+    model: kimi-k2.5
+    trigger_events:
+      - signup_completed
+      - payment_failed
+      - subscription_canceled
+    outputs:
+      - onboarding_nudges
+      - rescue_sequences
+      - churn_prevention_tasks
+
+  - id: finance_revops
+    role: metrics_and_budget_control
+    model: kimi-k2.5
+    schedule: "0 * * * *"
+    inputs:
+      - stripe_events
+      - ad_spend
+      - conversion_snapshot
+    outputs:
+      - budget_adjustments
+      - risk_alerts
+      - weekly_exec_report
+
+  - id: product_dev
+    role: continuous_improvement
+    model: kimi-k2.5
+    schedule: "*/30 * * * *"
+    inputs:
+      - bug_reports
+      - conversion_dropoffs
+      - support_tickets
+    outputs:
+      - prioritized_backlog
+      - implementation_tasks
+
+pipelines:
+  - id: free_to_paid
+    description: convert free users to paid subscription
+    steps:
+      - event: scan_completed
+      - action: lead_qualifier.score
+      - action: content.send_sequence_14d
+      - condition: "lead_score >= 70"
+      - action: sales_closer.trigger_upgrade
+
+  - id: paid_to_consulting
+    description: upsell high-risk paid users into consulting
+    steps:
+      - event: scan_completed
+      - condition: "risk_level in ['critical','high']"
+      - action: lead_qualifier.mark_consulting_candidate
+      - action: sales_closer.send_concierge_offer
+
+  - id: churn_recovery
+    description: recover failed/canceled subscriptions
+    steps:
+      - event: payment_failed
+      - action: customer_success.send_recovery_sequence
+      - condition: "no_recovery_72h"
+      - action: sales_closer.offer_downgrade_or_annual

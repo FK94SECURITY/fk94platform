@@ -16,6 +16,7 @@ import {
   getLocalizedText,
   Language,
 } from '@/data/checklist-data';
+import { trackEvent } from '@/lib/api';
 
 const STORAGE_KEY = 'fk94-checklist-progress';
 const INTRO_SEEN_KEY = 'fk94-intro-seen';
@@ -87,6 +88,14 @@ export default function ChecklistPage() {
   const [introStep, setIntroStep] = useState(0);
 
   const protocolSteps = getProtocolSteps(lang);
+
+  useEffect(() => {
+    trackEvent({
+      event_type: 'tool_opened',
+      payload: { tool: 'checklist' },
+      source: 'checklist_page',
+    });
+  }, []);
 
   // Save to localStorage when items change
   useEffect(() => {
