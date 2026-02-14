@@ -2,6 +2,7 @@
 FK94 Security Platform - Audit Runner
 """
 from datetime import datetime, timezone
+import logging
 
 from app.models.schemas import (
     AuditResult,
@@ -23,6 +24,8 @@ from app.services.multi_audit_service import (
 from app.services.osint_service import osint_service
 from app.services.scoring_service import scoring_service
 
+logger = logging.getLogger(__name__)
+
 
 async def run_full_audit(request: FullAuditRequest) -> AuditResult:
     """Run comprehensive security audit on an email."""
@@ -33,17 +36,35 @@ async def run_full_audit(request: FullAuditRequest) -> AuditResult:
     password_exposure = None
     osint_result = None
 
+    service_warnings: list[str] = []
+
     if request.check_breaches:
-        breach_result = await osint_service.check_hibp_breaches(email)
-        dehashed = await osint_service.check_dehashed(email)
-        if dehashed:
-            password_exposure = dehashed
+        try:
+            breach_result = await osint_service.check_hibp_breaches(email)
+        except Exception as e:
+            logger.warning("HIBP breach check failed for %s: %s", email, e)
+            service_warnings.append("Breach provider temporarily unavailable")
+        try:
+            dehashed = await osint_service.check_dehashed(email)
+            if dehashed:
+                password_exposure = dehashed
+        except Exception as e:
+            logger.warning("Dehashed check failed for %s: %s", email, e)
+            service_warnings.append("Credential leak provider temporarily unavailable")
 
     if request.password:
-        password_exposure = await osint_service.check_password_pwned(request.password)
+        try:
+            password_exposure = await osint_service.check_password_pwned(request.password)
+        except Exception as e:
+            logger.warning("Password pwned check failed for %s: %s", email, e)
+            service_warnings.append("Password exposure check temporarily unavailable")
 
     if request.check_osint:
-        osint_result = await osint_service.full_osint_check(email)
+        try:
+            osint_result = await osint_service.full_osint_check(email)
+        except Exception as e:
+            logger.warning("OSINT check failed for %s: %s", email, e)
+            service_warnings.append("OSINT provider temporarily unavailable")
 
     security_score = scoring_service.calculate_score(
         breach_result=breach_result,
@@ -61,7 +82,17 @@ async def run_full_audit(request: FullAuditRequest) -> AuditResult:
         "osint_result": osint_result.model_dump() if osint_result else None,
     }
 
-    ai_analysis = await deepseek_service.analyze_audit(audit_data)
+    ai_analysis = None
+    try:
+        ai_analysis = await deepseek_service.analyze_audit(audit_data)
+    except Exception as e:
+        logger.warning("AI analysis failed for %s: %s", email, e)
+        service_warnings.append("AI analysis temporarily unavailable")
+
+    if service_warnings:
+        recommendations.extend(
+            [f"{warning}. Re-run the scan in a few minutes." for warning in service_warnings]
+        )
 
     return AuditResult(
         id=audit_id,

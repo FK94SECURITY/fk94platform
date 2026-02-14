@@ -192,6 +192,26 @@ async function fetchWithRetry(
   return fetch(url, options);
 }
 
+async function throwApiError(response: Response, fallbackMessage: string): Promise<never> {
+  let detail = '';
+  try {
+    const contentType = response.headers.get('content-type') || '';
+    if (contentType.includes('application/json')) {
+      const data = await response.json();
+      detail = data?.detail || data?.message || '';
+    } else {
+      detail = (await response.text()).slice(0, 240);
+    }
+  } catch {
+    // Ignore parsing errors and use fallback only
+  }
+
+  const message = detail
+    ? `${fallbackMessage} (${response.status}: ${detail})`
+    : `${fallbackMessage} (${response.status})`;
+  throw new Error(message);
+}
+
 // === API Functions ===
 
 export async function checkEmail(email: string): Promise<BreachCheckResult> {
@@ -202,7 +222,7 @@ export async function checkEmail(email: string): Promise<BreachCheckResult> {
   });
 
   if (!response.ok) {
-    throw new Error('Failed to check email');
+    await throwApiError(response, 'Failed to check email');
   }
 
   return response.json();
@@ -216,7 +236,7 @@ export async function checkUsername(username: string): Promise<UsernameResult> {
   });
 
   if (!response.ok) {
-    throw new Error('Failed to check username');
+    await throwApiError(response, 'Failed to check username');
   }
 
   return response.json();
@@ -230,7 +250,7 @@ export async function checkPhone(phone: string, countryCode: string = 'AR'): Pro
   });
 
   if (!response.ok) {
-    throw new Error('Failed to check phone');
+    await throwApiError(response, 'Failed to check phone');
   }
 
   return response.json();
@@ -244,7 +264,7 @@ export async function checkDomain(domain: string): Promise<DomainResult> {
   });
 
   if (!response.ok) {
-    throw new Error('Failed to check domain');
+    await throwApiError(response, 'Failed to check domain');
   }
 
   return response.json();
@@ -258,7 +278,7 @@ export async function checkName(fullName: string, location?: string): Promise<Na
   });
 
   if (!response.ok) {
-    throw new Error('Failed to check name');
+    await throwApiError(response, 'Failed to check name');
   }
 
   return response.json();
@@ -272,7 +292,7 @@ export async function checkIP(ipAddress: string): Promise<IPResult> {
   });
 
   if (!response.ok) {
-    throw new Error('Failed to check IP');
+    await throwApiError(response, 'Failed to check IP');
   }
 
   return response.json();
@@ -286,7 +306,7 @@ export async function getSecurityScore(email: string): Promise<SecurityScore> {
   });
 
   if (!response.ok) {
-    throw new Error('Failed to get security score');
+    await throwApiError(response, 'Failed to get security score');
   }
 
   return response.json();
@@ -305,7 +325,7 @@ export async function runFullAudit(email: string, password?: string): Promise<Au
   });
 
   if (!response.ok) {
-    throw new Error('Failed to run audit');
+    await throwApiError(response, 'Failed to run audit');
   }
 
   return response.json();
@@ -327,7 +347,7 @@ export async function runMultiAudit(
   });
 
   if (!response.ok) {
-    throw new Error('Failed to run audit');
+    await throwApiError(response, 'Failed to run audit');
   }
 
   return response.json();
@@ -341,7 +361,7 @@ export async function askAI(query: string, context?: object): Promise<AIResponse
   });
 
   if (!response.ok) {
-    throw new Error('Failed to get AI response');
+    await throwApiError(response, 'Failed to get AI response');
   }
 
   return response.json();
@@ -359,7 +379,7 @@ export async function downloadReport(email: string): Promise<Blob> {
   });
 
   if (!response.ok) {
-    throw new Error('Failed to generate report');
+    await throwApiError(response, 'Failed to generate report');
   }
 
   return response.blob();
@@ -391,7 +411,7 @@ export async function submitContactLead(payload: ContactLeadPayload): Promise<{ 
   });
 
   if (!response.ok) {
-    throw new Error('Failed to submit lead');
+    await throwApiError(response, 'Failed to submit lead');
   }
 
   return response.json();
